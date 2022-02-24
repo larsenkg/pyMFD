@@ -1,0 +1,39 @@
+{
+    "name": "02041411.001",
+    "growth": "Polished12072018",
+    "sample": "D1",
+    "afm_spring_constant": 39,
+    "afm_tip": "tip19",
+    "thickness": 160E-9,
+    "ignored": false,
+    "cantilevers": [
+        {
+            "name": "D1a2",
+            "width": 2.7E-6,
+            "lin_ignore": 0,
+            "fixed_edge": 24,
+            "start": [
+                26,
+                13
+            ],
+            "end": [
+                38,
+                22
+            ]
+        },
+        {
+            "name": "D1a1",
+            "width": 2.7E-6,
+            "lin_ignore": 0,
+            "fixed_edge": 26,
+            "start": [
+                28,
+                38
+            ],
+            "end": [
+                44,
+                49
+            ]
+        }
+    ]
+}
