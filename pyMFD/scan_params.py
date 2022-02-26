@@ -35,10 +35,11 @@ def get_scan_params(sp_filename: str) -> dict:
 
     """
     with open(sp_filename) as file:
-        sp_params = json.load(file)
+        # Get the scan parameters.
+        sc_params = json.load(file)
 
-        # Some samples only have one cantilever, but we still want sp_params["cantilevers"] to be a list
-        if not isinstance(sp_params["cantilevers"], list):
-            sp_params["cantilevers"] = [sp_params["cantilevers"]]
+        # Some samples only have one cantilever, but we still want sc_params["cantilevers"] to be a list
+        if not isinstance(sc_params["cantilevers"], list):
+            sc_params["cantilevers"] = [sc_params["cantilevers"]]
 
-    return sp_params
+    return sc_params
