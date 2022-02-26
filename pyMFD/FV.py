@@ -1,16 +1,53 @@
 from pyMFD.nanoscope   import get_fv_data, get_params
 from pyMFD.scan_params import get_scan_params
+from pyMFD.summarize   import get_comp_mat
 
 class FV:
     '''
     This class represents a single force-volume scan. It contains the relevant scan parameters and force-volume data.
     '''
 
-    def __init__(self, fv_filename):
+    def __init__(
+        self, 
+        fv_filename, 
+        fv_params_func     = get_params, 
+        fv_data_func       = get_fv_data, 
+        sc_params_filename = None, 
+        sc_params_func     = get_scan_params,
+        fv_params_kwargs   = {},
+        fv_data_kwargs     = {},
+        sc_params_kwargs   = {},
+        ):
+        '''
+        Create a new FV class.
+        
+        Parameters
+        ----------
+        fv_filename : str
+        fv_params_func : function, optional
+            Function that takes a string to the FV file and returns the required parameters in a dictionary.
+            See pyMFD.nanoscope for information on the required parameters.
+        fv_data_func : function, optional
+            Function that takes a string to the FV file and parameters dictionary. Must return a tuple where
+            the first element is a 1-D np.ndarray containing the z_piezo ramp deflection series. The second 
+            argument is a np.ndarray with shape (X, Y, Z) containing the force-volume tip deflection data. 
+            X should be the size of the 1-D z_piezo ramp, Y should be 1 or 2 (depending on if only trace, or 
+            trace and retrace are included), and Z should be the squared value of the size of the FV scan.
+            E.g. Z=4096 for a 64x64 "pixel" scan.
+        sc_params_filename : str, optional
+            String containing the path to the scan parameters filename.
+        sc_params_func : function, optional
+            Function that takes sc_params_filename and returns a dictionary containing the required scan
+            parameters. See pyMFD.scan_params for information on the required parameters.
+        '''
         self.fv_filename             = fv_filename
-        self.fv_params               = get_params(self.fv_filename)
-        (self.z_piezo, self.tm_defl) = get_fv_data(self.fv_filename, self.fv_params)
-        self.sp_params               = get_scan_params(self.fv_filename + ".json")        
+        self.sc_params_filename      = self.fv_filename + ".json" if sc_params_filename is None else sc_params_filename
+        self._fv_params_func         = fv_params_func
+        self._fv_data_func           = fv_data_func
+        self._sc_params_func         = sc_params_func
+        self.fv_params               = self._fv_params_func(self.fv_filename, **fv_params_kwargs)
+        (self.z_piezo, self.tm_defl) = self._fv_data_func(self.fv_filename, self.fv_params, **fv_data_kwargs)
+        self.sc_params               = self._sc_params_func(self.sc_params_filename, **sc_params_kwargs)
         self.pixel_size              = self.get_pixel_size()
 
     def get_pixel_size(self, scan_size=None, scan_points=None):
@@ -22,7 +59,33 @@ class FV:
 
         return scan_size / scan_points
 
-    def summarize(summary_func):
-        '''Create a 2D representation of the force-volume data.'''
+    def get_extend(self):
+        return self.tm_defl[:, 0, :]
 
-    
+    def get_retract(self):
+        return self.tm_defl[:, 1, :]
+
+    def summarize(self, which_dir='retrace', summary_func=get_comp_mat, **kwargs):
+        '''
+        Create a 2D representation of the force-volume data.
+        
+        Parameters
+        ----------
+        which_dir : str {'trace', 'extend', 'retrace', 'retract'}, int {0 for trace, 1 for retrace}
+            Select whether the trace/extension curves or the retrace/retraction curves should be summarized.
+        summary_func : function
+            Function that will perform the summary. By default, this is a function that takes `z_piezo`, 
+            `tm_defl`, and `sc_params` and returns the compliance matrix and R^2 matrix (how well each curve 
+            was summarized). 
+        '''
+        if which_dir == 'trace' or which_dir == 'extend' or which_dir == 0:
+            which_dir = 0
+        elif which_dir == 'retrace' or which_dir == 'retract' or which_dir == 1:
+            which_dir = 1
+        else:
+            raise ValueError("which_dir must be one of: trace, extend, 0; or retrace, retract, 1")
+
+        data = self.get_extend() if which_dir == 0 else self.get_retract()
+
+        return summary_func(self.z_piezo, data, self.sc_params, **kwargs)
+
