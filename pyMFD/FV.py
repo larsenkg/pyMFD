@@ -6,6 +6,32 @@ class FV:
     '''
     This class represents a single force-volume scan. It contains the 
     relevant scan parameters and force-volume data.
+
+    Attributes
+    ----------
+    fv_filename : str
+        String pointing to the force-volume scan file.
+    sc_params_filename : str
+        String pointing to the force-volume scan parameters file.
+    fv_params : dict
+        Parameters extracted from the force-volume scan file header.
+    sc_params : dict
+        Scan parameters extracted from scan parameters JSON file.
+    z_piezo : ndarray
+        Displacement of AFM piezo. Has size `ramp_len` (from parameters 
+        `samples_per_ramp`).
+    tm_defl : ndarray
+        Tapping mode deflection. Has shape (`ramp_len`, 2, `num_curves`). 
+        The 2 comes from having both an extension and retraction and 
+        `num_curves` is the number of force-ramps in a scan, e.g. 4096.
+    pixel_size : float
+        Size of single pixel in force-volume map, in meters.
+    _fv_params_func : function
+        Function that returns the `fv_params` dictionary.
+    _fv_data_func : function
+        Function that returns the force-volume data.
+    _sc_params_func : function
+        Function that returns the `sv_params` dictionary.
     '''
 
     def __init__(
@@ -46,15 +72,7 @@ class FV:
             containing the required scan parameters. See pyMFD.scan_params 
             for information on the required parameters.
         '''
-        self.fv_filename             = fv_filename
-        self.sc_params_filename      = self.fv_filename + ".json" if sc_params_filename is None else sc_params_filename
-        self._fv_params_func         = fv_params_func
-        self._fv_data_func           = fv_data_func
-        self._sc_params_func         = sc_params_func
-        self.fv_params               = self._fv_params_func(self.fv_filename, **fv_params_kwargs)
-        (self.z_piezo, self.tm_defl) = self._fv_data_func(self.fv_filename, self.fv_params, **fv_data_kwargs)
-        self.sc_params               = self._sc_params_func(self.sc_params_filename, **sc_params_kwargs)
-        self.pixel_size              = self.get_pixel_size()
+        c              = self.get_pixel_size()
 
     def get_pixel_size(self, scan_size=None, scan_points=None):
         '''
