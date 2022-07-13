@@ -10,15 +10,7 @@ Example:
 import matplotlib.pyplot as plt
 from pyMFD.FV import FV
 from pyMFD.summarize import comp_mat_inspector
-from pyMFD.cantilever import (
-    get_cantilever_pos, 
-    get_cantilever_params, 
-    get_compliance_row, 
-    fit_compliance_linear, 
-    calc_modulus_offset, 
-    standardize_and_fit
-)
-
+from pyMFD.cantilever import calc_modulus
 
 spm_file        = "data/examples/02041411.001"  # Example force-volume scan
 fv              = FV(spm_file)                  # Load force-volume scan
@@ -45,18 +37,21 @@ plt.show()
 # Continued from above
 cant_num    = 0 # Cantilever number
 rows_to_avg = 3 # Number of rows to average around center line of cantilever
-pos         = get_cantilever_pos(fv.get_pixel_size(), comp_mat.shape[0])
 
-(thick, width, igno, fixed, start, end, row, col_s, col_e) = get_cantilever_params(fv.sc_params, cant_num)
+(E, offset, E_lin, offset_lin) = calc_modulus(fv, cant_num)
 
-comp_row           = get_compliance_row(comp_mat, row, rows_to_avg = rows_to_avg)
-(slope, intercept) = fit_compliance_linear(pos[col_s:col_e], comp_row[col_s:col_e])
-(E_lin, off_lin)   = calc_modulus_offset(slope, intercept, width, thick)
+print("---- Cubic fit ----")
+print(f"Young's modulus: {E/1e9:.2f} GPa")
+print(f"Offset: {offset*1e6:.2f} µm")
 
 print("---- Linearized fit ----")
-print(f"Slope: {slope:.2f}")
-print(f"Y-int: {intercept:.2f}")
 print(f"Young's modulus: {E_lin/1e9:.2f} GPa")
-print(f"Offset: {off_lin*1e6:.2f} µm")
+print(f"Offset: {offset_lin*1e6:.2f} µm")
+
 
 ```
+
+## Community guidelines
+If you are having issues installing or using this software, or would like to report a bug, please create a [new issue](https://github.com/larsenkg/MFD-analysis/issues/new) in this repository. Please provide as much information as possible, including a reproducible example (if applicable).
+
+Feature requests and pull requests are welcome. If you would like to contribute, but do not know where to start, you may create a new issue. Please let us know your interests and how you would like to help.
