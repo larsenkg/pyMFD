@@ -11,34 +11,46 @@ CSL  = b'*Ciao scan list'
 
 def read_fv_header(filename: str) -> dict:
     '''
-    Read the header information from a Bruker/Veeco Nanoscope v7.2 file. Returns a dictionary containing all of the lines
-    from the header organized under the sections:
+    Read the header information from a Bruker/Veeco Nanoscope v7.2 file. 
+    Returns a dictionary containing all of the lines from the header 
+    organized under the sections:
      - FFL  = b'*Force file list'
      - CFIL = b'*Ciao force image list'
      - CIL  = b'*Ciao image list'
      - SL   = b'*Scanner list'
      - CSL  = b'*Ciao scan list'
 
-    Nanoscope header files are a mess. There will be different sections depending on the type of data in the file. For more
-    information see Nanoscope User Guide and this informative forum post:
+    Nanoscope header files are a mess. There will be different sections 
+    depending on the type of data in the file. For more information see 
+    Nanoscope User Guide and this informative forum post:
      - https://physics-astronomy-manuals.wwu.edu/Nanosocpe%207.3%20User%20Guide.pdf (broken link as of 2/23/2022)
      - http://nanoqam.ca/wiki/lib/exe/fetch.php?media=nanoscope_software_8.10_user_guide-d_004-1025-000_.pdf
      - http://nanoscaleworld.bruker-axs.com/nanoscaleworld/forums/p/538/1065.aspx
 
-    In the file header some parameters start with '\@' instead of simply '\'. This is an indication to the software
-    that the data that follows is intended for a CIAO parameter object. After the '@', you might see a number
-    followed by a colon before the label. This number is what we call a “group number” and can generally be
-    ignored.
+    In the file header some parameters start with '\@' instead of simply
+    '\'. This is an indication to the software that the data that follows 
+    is intended for a CIAO parameter object. After the '@', you might see a 
+    number followed by a colon before the label. This number is what is 
+    called a “group number” and can generally be ignored.
     
-    Further, after the label and its colon, you will see a single definition character of 'V', 'C', or 'S'.
-     - V means _Value_ -- a parameter that contains a double and a unit of measure, and some scaling definitions.
-     - C means _Scale_ -- a parameter that is simply a scaled version of another.
-     - S means _Select_ -- a parameter that describes some selection that has been made
+    Further, after the label and its colon, you will see a single 
+    definition character of 'V', 'C', or 'S'.
+     - V means _Value_ -- a parameter that contains a double and a unit of 
+       measure, and some scaling definitions.
+     - C means _Scale_ -- a parameter that is simply a scaled version of 
+       another.
+     - S means _Select_ -- a parameter that describes some selection that 
+       has been made
 
     Parameters
     ----------
-    filename: str
+    filename : str
         Filename of the NanoScope file.
+    
+    Returns
+    -------
+    params : dict
+        Raw paramaters dictionary. Convert with `convert_params()`
     '''
 
     # May be useful:
@@ -93,9 +105,9 @@ def read_fv_header(filename: str) -> dict:
 
 def convert_params(old_params, custom_to_extract = []):
     '''
-    Convert the parameters from the NanoScope name to a new (universal) name.
-    If this code is adapted to new file formats, a new `convert_params` function
-    should return these same new parameters.
+    Convert the parameters from the NanoScope name to a new (universal) 
+    name. If this code is adapted to new file formats, a new 
+    `convert_params` function should return these same new parameters.
 
     These are the parameters we need:
 
@@ -115,12 +127,18 @@ def convert_params(old_params, custom_to_extract = []):
 
     Parameters
     ----------
-    old_params: dict
+    old_params : dict
         Original parameter dictionary loaded with `read_fv_header()`
-    custom_to_extract: array of tuples, optional
-        This function will also convert any additional parameters provided here. 
-        Follow tuple format in function: 
-        (Section, Parameter Name, New parameter name, Function to convert from bytestring to desired type)
+    custom_to_extract : array of tuples, optional
+        This function will also convert any additional parameters provided 
+        here. Follow tuple format in function: 
+         (Section, Parameter Name, New parameter name, Function to convert 
+         from bytestring to desired type)
+
+    Returns
+    -------
+    params : dict
+        Params dictionary with new parameter names.
 
     '''
 
@@ -158,27 +176,37 @@ def convert_params(old_params, custom_to_extract = []):
 
 def read_fv_data(filename: str, params: dict) -> np.ndarray:
     '''
-    Read the force-volume or force-ramp data from a Nanoscope file. The data is converted from binary
-    representation to a float64 representation of the the SPM data in ADC counts. Convert to volts
+    Read the force-volume or force-ramp data from a Nanoscope file. The 
+    data is converted from binary representation to a float64 
+    representation of the the SPM data in ADC counts. Convert to volts
     using `convert_fv_data`.
 
-    A force-volume scan contains three dimensions of data. For every point in a 2D array, two force-ramps are 
-    recorded (one for extension towards the sample and one for retraction -- also called trace and retrace).
+    A force-volume scan contains three dimensions of data. For every point 
+    in a 2D array, two force-ramps are recorded (one for extension towards 
+    the sample and one for retraction -- also called trace and retrace).
 
-    The raw data should have a size equal to the number of points in the 2D array times the number of samples in 
-    the force-ramp all times two (for extend and retract).
+    The raw data should have a size equal to the number of points in the 2D 
+    array times the number of samples in the force-ramp all times two (for 
+    extend and retract).
 
-    For example, a 64x64 with 1024 samples per force-ramp will have a data length of:
+    For example, a 64x64 with 1024 samples per force-ramp will have a data 
+    length of:
      - 64^2 * 1024 * 2 = 8388608
 
-    This length should be recorded in the header as `\*Ciao force image list\Data length` (keeping in mind the bytes/pixel).
+    This length should be recorded in the header as `\*Ciao force image 
+    list\Data length` (keeping in mind the bytes/pixel).
 
     Parameters
     ----------
-    filename: str
+    filename : str
         Path to NanoScope scan file.
-    params: dict
+    params : dict
         Parameters dictionary. From `get_params()`.
+
+    Returns
+    -------
+    ndarray
+        NanoScope scan data, unpacked from raw bytes.
     '''
     offset      = params["fv_data_offset"]
     data_length = params["fv_data_length"]
@@ -207,15 +235,25 @@ def read_fv_data(filename: str, params: dict) -> np.ndarray:
     
 def convert_fv_data(data: np.ndarray, params: dict) -> tuple:
     '''
-    Convert from ADC counts to volts. Returns the piezo ramp deflection `z_piezo` and the 
-    force-volume TM deflection data in volts in a tuple: (z_piezo, tm_defl).
+    Convert from ADC counts to volts. Returns the piezo ramp deflection 
+    `z_piezo` and the force-volume TM deflection data in volts in a tuple:
+    (z_piezo, tm_defl).
 
     Parameters
     ----------
-    data: ndarray
+    data : ndarray
         Raw data from force-volume file (from `read_fv_data()`).
-    params: dict
+    params : dict
         Parameters dictionary. From `get_params()`.
+
+    Returns
+    -------
+    z_piezo : ndarray
+        Displacement of AFM piezo. Has size `ramp_len` (from parameters 
+        `samples_per_ramp`).
+    tm_defl : ndarray
+        Tapping mode deflection. Has shape (`ramp_len`, 2, `num_curves`). 
+        The 2 comes from having both an extension and retraction.
     '''
     z_sens     = params["piezo_nm_per_volt"]
     ramp_size  = params["ramp_size"]
@@ -239,19 +277,31 @@ def convert_fv_data(data: np.ndarray, params: dict) -> tuple:
 
 def get_fv_data(filename: str, params: dict) -> tuple:
     '''
-    Get the `z_piezo` deflection ramp. `params` should be the converted, generalized parameter dictionary.
+    Get `z_piezo` and `tm_defl`. `params` should be the converted, 
+    generalized parameter dictionary.
     
     Parameters
     ----------
-    filename: str
+    filename : str
         Path to NanoScope scan file.
-    params: dict
+    params : dict
         Parameters dictionary. From `get_params()`.
+
+    Returns
+    -------
+    z_piezo : ndarray
+        Displacement of AFM piezo. Has size `ramp_len` (from parameters 
+        `samples_per_ramp`).
+    tm_defl : ndarray
+        Tapping mode deflection. Has shape (`ramp_len`, 2, `num_curves`). 
+        The 2 comes from having both an extension and retraction.
+
     '''
     data  = read_fv_data(filename, params)
 
     # Convert to metric units
-    return convert_fv_data(data, params)
+    (z_piezo, tm_defl) = convert_fv_data(data, params)
+    return (z_piezo, tm_defl)
 
 def get_params(filename: str) -> dict:
     '''
@@ -259,8 +309,13 @@ def get_params(filename: str) -> dict:
 
     Parameters
     ----------
-    filename: str
+    filename : str
         Path to NanoScope scan file.
+
+    Returns
+    -------
+    params : dict
+        Params dictionary with new parameter names.
     '''
     all_fv_params = read_fv_header(filename )
     fv_params     = convert_params(all_fv_params)
@@ -269,13 +324,14 @@ def get_params(filename: str) -> dict:
 
 def save_txt_data(data, filename):
     '''
-    Save the converted data to an ASCII file using the same format as exports from Nanoscope Analysis 2.0.
+    Save the converted data to an ASCII file using the same format as 
+    exports from Nanoscope Analysis 2.0.
 
     Parameters
     ----------
-    data: ndarray
+    data : ndarray
         Converted data to be saved in ASCII format.
-    filename: str
+    filename : str
         Filename to which the ASIC data should be saved.
     '''
     header = "Calc_Ramp_Ex_nm\tCalc_Ramp_Rt_nm\tDefl_mV_Ex\tDefl_mV_Rt\tpN Not Available\tpN Not Available\t"
