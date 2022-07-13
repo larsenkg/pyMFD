@@ -4,30 +4,17 @@ from pyMFD.summarize import comp_mat_inspector
 
 import matplotlib.pyplot as plt
 
-spm_file   = "data/examples/02041411.001"
-
-fv = FV(spm_file)
+spm_file = "data/examples/02041411.001"    # Example force-volume scan
+fv       = FV(spm_file)                    # Load force-volume scan
 
 print(fv.tm_defl.shape)
 
 (comp_mat, r2s) = fv.summarize()
 print(comp_mat.shape)
 
-comp_mat_inspector(comp_mat, fv.z_piezo, fv.get_retract(), fv.sc_params, r2s_mat = r2s)
+# Interactive compliance map inspector
+# Use to mouse to select pixels in the (left) compliance map.
+# The raw force-deflection data is shown in the center plot.
+# The R^2 map (how well the force-deflection data was fit) is shown in the right map.
+comp_mat_inspector(comp_mat, fv.z_piezo, fv.get_retract(), fv.sc_params)#, r2s_mat = r2s)
 plt.show()
-
-# fig, ax = plt.subplots()
-# ax.pcolormesh(comp_mat, vmin=0, vmax=1)
-# ax.invert_yaxis()
-# plt.show()
-
-# spm_params = read_spm_header(spm_file)
-# params     = get_useful_params(spm_params)
-# spm_data   = read_spm_data(spm_file, params)
-
-# # Convert to metric units
-# (z_piezo, tm_defl) = convert_spm_data(spm_data, params)
-
-
-
-# print(params)
