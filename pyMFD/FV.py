@@ -72,7 +72,16 @@ class FV:
             containing the required scan parameters. See pyMFD.scan_params 
             for information on the required parameters.
         '''
-        c              = self.get_pixel_size()
+        self.fv_filename             = fv_filename
+        self.sc_params_filename      = self.fv_filename + ".json" if sc_params_filename is None else sc_params_filename
+        self._fv_params_func         = fv_params_func
+        self._fv_data_func           = fv_data_func
+        self._sc_params_func         = sc_params_func
+        self.fv_params               = self._fv_params_func(self.fv_filename, **fv_params_kwargs)
+        (self.z_piezo, self.tm_defl) = self._fv_data_func(self.fv_filename, self.fv_params, **fv_data_kwargs)
+        self.sc_params               = self._sc_params_func(self.sc_params_filename, **sc_params_kwargs)
+        self.pixel_size              = self.get_pixel_size()
+
 
     def get_pixel_size(self, scan_size=None, scan_points=None):
         '''
