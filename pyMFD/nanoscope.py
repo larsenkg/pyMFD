@@ -14,27 +14,30 @@ def read_fv_header(filename: str) -> dict:
     Read the header information from a Bruker/Veeco Nanoscope v7.2 file. 
     Returns a dictionary containing all of the lines from the header 
     organized under the sections:
-     - FFL  = b'*Force file list'
-     - CFIL = b'*Ciao force image list'
-     - CIL  = b'*Ciao image list'
-     - SL   = b'*Scanner list'
-     - CSL  = b'*Ciao scan list'
+
+     - FFL  = b'\*Force file list'
+     - CFIL = b'\*Ciao force image list'
+     - CIL  = b'\*Ciao image list'
+     - SL   = b'\*Scanner list'
+     - CSL  = b'\*Ciao scan list'
 
     Nanoscope header files are a mess. There will be different sections 
     depending on the type of data in the file. For more information see 
     Nanoscope User Guide and this informative forum post:
-     - https://physics-astronomy-manuals.wwu.edu/Nanosocpe%207.3%20User%20Guide.pdf (broken link as of 2/23/2022)
-     - http://nanoqam.ca/wiki/lib/exe/fetch.php?media=nanoscope_software_8.10_user_guide-d_004-1025-000_.pdf
-     - http://nanoscaleworld.bruker-axs.com/nanoscaleworld/forums/p/538/1065.aspx
 
-    In the file header some parameters start with '\@' instead of simply
-    '\'. This is an indication to the software that the data that follows 
+     - [Nanoscope 7.3](https://physics-astronomy-manuals.wwu.edu/Nanosocpe%207.3%20User%20Guide.pdf) (broken link as of 2/23/2022)
+     - [Nanoscope 8.10](http://nanoqam.ca/wiki/lib/exe/fetch.php?media=nanoscope_software_8.10_user_guide-d_004-1025-000\_.pdf)
+     - [Forum post](http://nanoscaleworld.bruker-axs.com/nanoscaleworld/forums/p/538/1065.aspx)
+
+    In the file header some parameters start with '\\@' instead of simply
+    '\\'. This is an indication to the software that the data that follows 
     is intended for a CIAO parameter object. After the '@', you might see a 
     number followed by a colon before the label. This number is what is 
     called a “group number” and can generally be ignored.
     
     Further, after the label and its colon, you will see a single 
     definition character of 'V', 'C', or 'S'.
+
      - V means _Value_ -- a parameter that contains a double and a unit of 
        measure, and some scaling definitions.
      - C means _Scale_ -- a parameter that is simply a scaled version of 
@@ -112,6 +115,7 @@ def convert_params(old_params, custom_to_extract = []):
     These are the parameters we need:
 
     CFIL
+
      - Data offset
      - Data length
      - Bytes/pixel
@@ -119,10 +123,12 @@ def convert_params(old_params, custom_to_extract = []):
      - @4:Ramp size
 
     CSL
+
      - Samps/line
      - @2:TMDeflectionLimit
 
     SL
+
      - @Sens. Zsens
 
     Parameters
@@ -132,8 +138,8 @@ def convert_params(old_params, custom_to_extract = []):
     custom_to_extract : array of tuples, optional
         This function will also convert any additional parameters provided 
         here. Follow tuple format in function: 
-         (Section, Parameter Name, New parameter name, Function to convert 
-         from bytestring to desired type)
+        (Section, Parameter Name, New parameter name, Function to convert 
+        from bytestring to desired type)
 
     Returns
     -------
@@ -190,8 +196,9 @@ def read_fv_data(filename: str, params: dict) -> np.ndarray:
     extend and retract).
 
     For example, a 64x64 with 1024 samples per force-ramp will have a data 
-    length of:
-     - 64^2 * 1024 * 2 = 8388608
+    length of::
+
+        64^2 * 1024 * 2 = 8388608
 
     This length should be recorded in the header as `\*Ciao force image 
     list\Data length` (keeping in mind the bytes/pixel).

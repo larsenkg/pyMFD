@@ -32,6 +32,17 @@ class FV:
         Function that returns the force-volume data.
     _sc_params_func : function
         Function that returns the `sv_params` dictionary.
+
+    Methods
+    -------
+    get_extend(): 
+        Get extenstion ramp data
+    get_retract():
+        Get retraction ramp data
+    get_pixel_size([scan_size, scan_points]): 
+        Get pixel size
+    summarize([which_dir, summary_func]):
+        Summarize the ramp data (i.e. extract compliance)
     '''
 
     def __init__(
@@ -146,6 +157,8 @@ class FV:
             Function that will perform the summary. By default, this is a function that takes `z_piezo`, 
             `tm_defl`, and `sc_params` and returns the compliance matrix and R^2 matrix (how well each curve 
             was summarized). 
+        **kwargs : dict
+            Arguments that are passed to `summary_func`.
 
         Returns
         -------
@@ -159,7 +172,7 @@ class FV:
 
         See Also
         --------
-        See `get_comp_mat()`.
+        pyMFD.summarize.get_comp_mat
         '''
         if which_dir == 'trace' or which_dir == 'extend' or which_dir == 0:
             which_dir = 0
