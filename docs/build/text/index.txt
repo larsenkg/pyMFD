@@ -1,0 +1,22 @@
+Welcome to pyMFD’s documentation!
+*********************************
+
+
+Contents:
+^^^^^^^^^
+
+* MFD-analysis
+
+  * example module
+
+  * pyMFD package
+
+
+Indices and tables
+******************
+
+* Index
+
+* Module Index
+
+* Search Page

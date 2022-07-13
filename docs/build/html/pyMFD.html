@@ -1,0 +1,1076 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>pyMFD package &#8212; pyMFD 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pyMFD.tests package" href="pyMFD.tests.html" />
+    <link rel="prev" title="example module" href="example.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="pymfd-package">
+<h1>pyMFD package<a class="headerlink" href="#pymfd-package" title="Permalink to this headline">¶</a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pyMFD.tests.html">pyMFD.tests package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyMFD.tests.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyMFD.tests.html#module-pyMFD.tests.test_FV">pyMFD.tests.test_FV module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyMFD.tests.html#module-pyMFD.tests.test_cantilever">pyMFD.tests.test_cantilever module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyMFD.tests.html#module-pyMFD.tests.test_nanoscope">pyMFD.tests.test_nanoscope module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyMFD.tests.html#module-pyMFD.tests.test_scan_params">pyMFD.tests.test_scan_params module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyMFD.tests.html#module-pyMFD.tests">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-pyMFD.FV">
+<span id="pymfd-fv-module"></span><h2>pyMFD.FV module<a class="headerlink" href="#module-pyMFD.FV" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyMFD.FV.FV">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyMFD.FV.</span></span><span class="sig-name descname"><span class="pre">FV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fv_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fv_params_func=&lt;function</span> <span class="pre">get_params&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fv_data_func=&lt;function</span> <span class="pre">get_fv_data&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_params_filename=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_params_func=&lt;function</span> <span class="pre">get_scan_params&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fv_params_kwargs={}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fv_data_kwargs={}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_params_kwargs={}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.FV.FV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class represents a single force-volume scan. It contains the 
+relevant scan parameters and force-volume data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>fv_filename</strong><span class="classifier">str</span></dt><dd><p>String pointing to the force-volume scan file.</p>
+</dd>
+<dt><strong>sc_params_filename</strong><span class="classifier">str</span></dt><dd><p>String pointing to the force-volume scan parameters file.</p>
+</dd>
+<dt><strong>fv_params</strong><span class="classifier">dict</span></dt><dd><p>Parameters extracted from the force-volume scan file header.</p>
+</dd>
+<dt><strong>sc_params</strong><span class="classifier">dict</span></dt><dd><p>Scan parameters extracted from scan parameters JSON file.</p>
+</dd>
+<dt><strong>z_piezo</strong><span class="classifier">ndarray</span></dt><dd><p>Displacement of AFM piezo. Has size <cite>ramp_len</cite> (from parameters 
+<cite>samples_per_ramp</cite>).</p>
+</dd>
+<dt><strong>tm_defl</strong><span class="classifier">ndarray</span></dt><dd><p>Tapping mode deflection. Has shape (<cite>ramp_len</cite>, 2, <cite>num_curves</cite>). 
+The 2 comes from having both an extension and retraction and 
+<cite>num_curves</cite> is the number of force-ramps in a scan, e.g. 4096.</p>
+</dd>
+<dt><strong>pixel_size</strong><span class="classifier">float</span></dt><dd><p>Size of single pixel in force-volume map, in meters.</p>
+</dd>
+<dt><strong>_fv_params_func</strong><span class="classifier">function</span></dt><dd><p>Function that returns the <cite>fv_params</cite> dictionary.</p>
+</dd>
+<dt><strong>_fv_data_func</strong><span class="classifier">function</span></dt><dd><p>Function that returns the force-volume data.</p>
+</dd>
+<dt><strong>_sc_params_func</strong><span class="classifier">function</span></dt><dd><p>Function that returns the <cite>sv_params</cite> dictionary.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 48%" />
+<col style="width: 52%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>get_extend():</strong></p></td>
+<td><p>Get extenstion ramp data</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>get_retract():</strong></p></td>
+<td><p>Get retraction ramp data</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>get_pixel_size([scan_size, scan_points]):</strong></p></td>
+<td><p>Get pixel size</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>summarize([which_dir, summary_func]):</strong></p></td>
+<td><p>Summarize the ramp data (i.e. extract compliance)</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyMFD.FV.FV.get_extend">
+<span class="sig-name descname"><span class="pre">get_extend</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.FV.FV.get_extend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the force-volume data recorded during the extension of the 
+AFM cantilever.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ndarray</dt><dd><p>The extension curves of the tapping mode deflection data.
+Shape is (ramp_length, 1, num_curves), e.g. (1024, 1, 4096)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyMFD.FV.FV.get_pixel_size">
+<span class="sig-name descname"><span class="pre">get_pixel_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scan_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scan_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.FV.FV.get_pixel_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the size of a single pixel in the force-volume data. 
+Should be in units of meters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>scan_size</strong><span class="classifier">float, optional</span></dt><dd><p>The total size of the force-volume scan (in meters).</p>
+</dd>
+<dt><strong>scan_points</strong><span class="classifier">int, optional</span></dt><dd><p>The number of force-deflection ramps in each line of the scan.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>float</dt><dd><p>Size of pixel (in meters).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyMFD.FV.FV.get_retract">
+<span class="sig-name descname"><span class="pre">get_retract</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.FV.FV.get_retract" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the force-volume data recorded during the retraction of the 
+AFM cantilever.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ndarray</dt><dd><p>The retraction curves of the tapping mode deflection data.
+Shape is (ramp_length, 1, num_curves), e.g. (1024, 1, 4096)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyMFD.FV.FV.summarize">
+<span class="sig-name descname"><span class="pre">summarize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">which_dir='retrace'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">summary_func=&lt;function</span> <span class="pre">get_comp_mat&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.FV.FV.summarize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a 2D representation of the force-volume data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>which_dir</strong><span class="classifier">str {‘trace’, ‘extend’, ‘retrace’, ‘retract’}, int {0 for trace, 1 for retrace}</span></dt><dd><p>Select whether the trace/extension curves or the retrace/retraction curves should be summarized.</p>
+</dd>
+<dt><strong>summary_func</strong><span class="classifier">function</span></dt><dd><p>Function that will perform the summary. By default, this is a function that takes <cite>z_piezo</cite>, 
+<cite>tm_defl</cite>, and <cite>sc_params</cite> and returns the compliance matrix and R^2 matrix (how well each curve 
+was summarized).</p>
+</dd>
+<dt><strong>**kwargs</strong><span class="classifier">dict</span></dt><dd><p>Arguments that are passed to <cite>summary_func</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Default return values if <cite>summary_func`=`get_comp_mat</cite>.</dt><dd></dd>
+<dt>ndarray</dt><dd><p>Compliance matrix. Shape should be square, with the size of the 
+sides being the square root of the number of force ramps.
+E.g. shape is (64, 64).</p>
+</dd>
+<dt>ndarray</dt><dd><p>R^2 matrix. See <cite>comp</cite> for shape.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#pyMFD.summarize.get_comp_mat" title="pyMFD.summarize.get_comp_mat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyMFD.summarize.get_comp_mat</span></code></a></dt><dd></dd>
+</dl>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pyMFD.cantilever">
+<span id="pymfd-cantilever-module"></span><h2>pyMFD.cantilever module<a class="headerlink" href="#module-pyMFD.cantilever" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.cantilever.calc_modulus">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.cantilever.</span></span><span class="sig-name descname"><span class="pre">calc_modulus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cant_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows_to_avg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.cantilever.calc_modulus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the modulus from cantilever compliance using both the cubic 
+model and linear model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>fv</strong><span class="classifier">FV</span></dt><dd><p>Object of class FV, which represents a single force-volume scan.</p>
+</dd>
+<dt><strong>cant_num</strong><span class="classifier">int</span></dt><dd><p>Scans can contain more than one cantilever. This is an index 
+(starting at 0) to select 
+which cantilever to use.</p>
+</dd>
+<dt><strong>rows_to_avg</strong><span class="classifier">int, optional</span></dt><dd><p>Total number of rows to average. Will always be symmetric, rounded 
+up. Passing in 2 or 3 is equivalent.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>E, offset</strong><span class="classifier">float</span></dt><dd><p>Modulus and offset from the cubic method</p>
+</dd>
+<dt><strong>E_lin, offset_lin</strong><span class="classifier">float</span></dt><dd><p>Modulus and offset using the linear method</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.cantilever.calc_modulus_offset">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.cantilever.</span></span><span class="sig-name descname"><span class="pre">calc_modulus_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intercept</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.cantilever.calc_modulus_offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the modulus and fixed end offset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>slope</strong><span class="classifier">float</span></dt><dd><p>Slope returned from <cite>fit_compliance_linear()</cite></p>
+</dd>
+<dt><strong>intercept</strong><span class="classifier">float</span></dt><dd><p>Intercept returned from <cite>fit_compliance_linear()</cite></p>
+</dd>
+<dt><strong>width</strong><span class="classifier">float</span></dt><dd><p>Width of cantilever</p>
+</dd>
+<dt><strong>thick</strong><span class="classifier">float</span></dt><dd><p>Thickness of cantilever</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>E, c</strong><span class="classifier">float</span></dt><dd><p>Young’s modulus and position offset (<cite>c</cite>).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.cantilever.fit_compliance">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.cantilever.</span></span><span class="sig-name descname"><span class="pre">fit_compliance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compliances</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func=&lt;function</span> <span class="pre">fit_fun&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.cantilever.fit_compliance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Standardized and then fit the non-linearized (i.e. original) compliance 
+data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>position</strong><span class="classifier">ndarray</span></dt><dd><p>Vector of positions (in meters).</p>
+</dd>
+<dt><strong>compliance</strong><span class="classifier">ndarray</span></dt><dd><p>Vector of linearized compliance.</p>
+</dd>
+<dt><strong>width</strong><span class="classifier">float</span></dt><dd><p>Width of cantilever</p>
+</dd>
+<dt><strong>thick</strong><span class="classifier">float</span></dt><dd><p>Thickness of cantilever</p>
+</dd>
+<dt><strong>func</strong><span class="classifier">function</span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>E</strong><span class="classifier">float</span></dt><dd><p>Young’s modulus</p>
+</dd>
+<dt><strong>pos_off</strong><span class="classifier">float</span></dt><dd><p>Offset in initial guess of fixed end</p>
+</dd>
+<dt><strong>a</strong><span class="classifier">float</span></dt><dd><p>This is the <cite>a</cite> parameter in <cite>fit_fun()</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.cantilever.fit_compliance_linear">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.cantilever.</span></span><span class="sig-name descname"><span class="pre">fit_compliance_linear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compliance</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.cantilever.fit_compliance_linear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the linearized position vs compliance graph.</p>
+<p>1/k       = (4/(E*w*t^3))*(L-c)^3
+1/k^(1/3) = (4/(E*w*t^3))^(1/3)*(L-c)
+1/k^(1/3) = a*(L-c)
+1/k^(1/3) = a*L-a*c
+y   = m*x+b</p>
+<p>The slope is proportional to E. To get the fixed end offset, divide the 
+intercept by the slope (and take negative).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>position</strong><span class="classifier">ndarray</span></dt><dd><p>Vector of positions (in meters).</p>
+</dd>
+<dt><strong>compliance</strong><span class="classifier">ndarray</span></dt><dd><p>Vector of linearized compliance.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>res.slope</strong><span class="classifier">float</span></dt><dd><p>Slope of the compliance data.</p>
+</dd>
+<dt><strong>res.intercept</strong><span class="classifier">float</span></dt><dd><p>Y-intercept of the compliance data.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.cantilever.fit_fun">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.cantilever.</span></span><span class="sig-name descname"><span class="pre">fit_fun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.cantilever.fit_fun" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Function to fit with scipy.optimize.curve_fit. </dt><dd><p>compliance = 1/k = 1/a*(L - c)**3</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>L</strong><span class="classifier">float</span></dt><dd><p>Position along cantilever</p>
+</dd>
+<dt><strong>a</strong><span class="classifier">float</span></dt><dd><p>Combination of width, thickness, and modulus.</p>
+</dd>
+<dt><strong>c</strong><span class="classifier">float</span></dt><dd><p>Offset from L.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>float</dt><dd><p>Compliance (inverse of stiffness)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.cantilever.get_cantilever_params">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.cantilever.</span></span><span class="sig-name descname"><span class="pre">get_cantilever_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cant_num</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.cantilever.get_cantilever_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the important parameters from the parameter dictionary (loaded from 
+JSON) for a specific cantilever.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>params</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of parameters. Load from JSON using <cite>get_scan_params()</cite>. 
+Pass in only parameter for single sample.</p>
+</dd>
+<dt><strong>cant_num</strong><span class="classifier">int</span></dt><dd><p>Cantilever number for which to get params.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>thick, width</strong><span class="classifier">float</span></dt><dd><p>Thickness and width of the cantilever.</p>
+</dd>
+<dt><strong>igno</strong><span class="classifier">int</span></dt><dd><p>Number of pixels to ignore from fixed end.</p>
+</dd>
+<dt><strong>fixed</strong><span class="classifier">int</span></dt><dd><p>Pixel number of fixed end.</p>
+</dd>
+<dt><strong>start, end</strong><span class="classifier">int</span></dt><dd><p>Start and end coordinates describing cantilever.</p>
+</dd>
+<dt><strong>col_s, col_e</strong><span class="classifier">int</span></dt><dd><p>Column start and column end (i.e. the x-coordinate).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.cantilever.get_cantilever_pos">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.cantilever.</span></span><span class="sig-name descname"><span class="pre">get_cantilever_pos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pixel_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.cantilever.get_cantilever_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the pixel locations in meters across a row.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>pixel_size</strong><span class="classifier">float</span></dt><dd><p>Size of pixel in meters.</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">int</span></dt><dd><p>Size of scan (number of pixels in scan).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>ndarray</dt><dd><p>List of cantilever positions (in meters).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.cantilever.get_compliance_row">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.cantilever.</span></span><span class="sig-name descname"><span class="pre">get_compliance_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comp_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows_to_avg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.cantilever.get_compliance_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a full row of the compliance map. If rows_to_avg is greater than 
+1, then rows above and below <cite>row</cite> will be averaged.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>comp_mat</strong><span class="classifier">ndarray</span></dt><dd><p>Compliance matrix</p>
+</dd>
+<dt><strong>row</strong><span class="classifier">int</span></dt><dd><p>Row of scan to extract</p>
+</dd>
+<dt><strong>rows_to_avg</strong><span class="classifier">int, optional</span></dt><dd><p>Total number of rows to average. Will always be symmetric, rounded 
+up. Passing in 2 or 3 is equivalent.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>comp_row</strong><span class="classifier">ndarray</span></dt><dd><p>Returns the compliance data (possibly averaged).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.cantilever.offset_to_col_coord">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.cantilever.</span></span><span class="sig-name descname"><span class="pre">offset_to_col_coord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.cantilever.offset_to_col_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO: Think of a better name for this function.
+TODO: Remove if unused</p>
+<p>Takes the offset calculated from fitting the the compliance row and 
+return where that offset is in compliance map space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>offset</strong><span class="classifier">float</span></dt><dd><p>Offset calculated by fitting. This is how far the estimated fixed 
+end is from the origin selected for <cite>position</cite> array.</p>
+</dd>
+<dt><strong>col_s</strong><span class="classifier">int</span></dt><dd><p>Column (from compliance map). This is the fixed end location.</p>
+</dd>
+<dt><strong>pixel_size</strong><span class="classifier">float</span></dt><dd><p>Size of single pixel in meters.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>int</dt><dd><p>Offset location in column coordinates.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyMFD.nanoscope">
+<span id="pymfd-nanoscope-module"></span><h2>pyMFD.nanoscope module<a class="headerlink" href="#module-pyMFD.nanoscope" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.nanoscope.convert_fv_data">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.nanoscope.</span></span><span class="sig-name descname"><span class="pre">convert_fv_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#pyMFD.nanoscope.convert_fv_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from ADC counts to volts. Returns the piezo ramp deflection 
+<cite>z_piezo</cite> and the force-volume TM deflection data in volts in a tuple:
+(z_piezo, tm_defl).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data</strong><span class="classifier">ndarray</span></dt><dd><p>Raw data from force-volume file (from <cite>read_fv_data()</cite>).</p>
+</dd>
+<dt><strong>params</strong><span class="classifier">dict</span></dt><dd><p>Parameters dictionary. From <cite>get_params()</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>z_piezo</strong><span class="classifier">ndarray</span></dt><dd><p>Displacement of AFM piezo. Has size <cite>ramp_len</cite> (from parameters 
+<cite>samples_per_ramp</cite>).</p>
+</dd>
+<dt><strong>tm_defl</strong><span class="classifier">ndarray</span></dt><dd><p>Tapping mode deflection. Has shape (<cite>ramp_len</cite>, 2, <cite>num_curves</cite>). 
+The 2 comes from having both an extension and retraction.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.nanoscope.convert_params">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.nanoscope.</span></span><span class="sig-name descname"><span class="pre">convert_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">old_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_to_extract</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.nanoscope.convert_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the parameters from the NanoScope name to a new (universal) 
+name. If this code is adapted to new file formats, a new 
+<cite>convert_params</cite> function should return these same new parameters.</p>
+<p>These are the parameters we need:</p>
+<p>CFIL</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Data offset</p></li>
+<li><p>Data length</p></li>
+<li><p>Bytes/pixel</p></li>
+<li><p>Samps/line</p></li>
+<li><p>&#64;4:Ramp size</p></li>
+</ul>
+</div></blockquote>
+<p>CSL</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Samps/line</p></li>
+<li><p>&#64;2:TMDeflectionLimit</p></li>
+</ul>
+</div></blockquote>
+<p>SL</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>&#64;Sens. Zsens</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>old_params</strong><span class="classifier">dict</span></dt><dd><p>Original parameter dictionary loaded with <cite>read_fv_header()</cite></p>
+</dd>
+<dt><strong>custom_to_extract</strong><span class="classifier">array of tuples, optional</span></dt><dd><p>This function will also convert any additional parameters provided 
+here. Follow tuple format in function: 
+(Section, Parameter Name, New parameter name, Function to convert 
+from bytestring to desired type)</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>params</strong><span class="classifier">dict</span></dt><dd><p>Params dictionary with new parameter names.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.nanoscope.get_fv_data">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.nanoscope.</span></span><span class="sig-name descname"><span class="pre">get_fv_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#pyMFD.nanoscope.get_fv_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get <cite>z_piezo</cite> and <cite>tm_defl</cite>. <cite>params</cite> should be the converted, 
+generalized parameter dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filename</strong><span class="classifier">str</span></dt><dd><p>Path to NanoScope scan file.</p>
+</dd>
+<dt><strong>params</strong><span class="classifier">dict</span></dt><dd><p>Parameters dictionary. From <cite>get_params()</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>z_piezo</strong><span class="classifier">ndarray</span></dt><dd><p>Displacement of AFM piezo. Has size <cite>ramp_len</cite> (from parameters 
+<cite>samples_per_ramp</cite>).</p>
+</dd>
+<dt><strong>tm_defl</strong><span class="classifier">ndarray</span></dt><dd><p>Tapping mode deflection. Has shape (<cite>ramp_len</cite>, 2, <cite>num_curves</cite>). 
+The 2 comes from having both an extension and retraction.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.nanoscope.get_params">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.nanoscope.</span></span><span class="sig-name descname"><span class="pre">get_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pyMFD.nanoscope.get_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the parameters from the NanoScope file header.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filename</strong><span class="classifier">str</span></dt><dd><p>Path to NanoScope scan file.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>params</strong><span class="classifier">dict</span></dt><dd><p>Params dictionary with new parameter names.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.nanoscope.read_fv_data">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.nanoscope.</span></span><span class="sig-name descname"><span class="pre">read_fv_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#pyMFD.nanoscope.read_fv_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the force-volume or force-ramp data from a Nanoscope file. The 
+data is converted from binary representation to a float64 
+representation of the the SPM data in ADC counts. Convert to volts
+using <cite>convert_fv_data</cite>.</p>
+<p>A force-volume scan contains three dimensions of data. For every point 
+in a 2D array, two force-ramps are recorded (one for extension towards 
+the sample and one for retraction – also called trace and retrace).</p>
+<p>The raw data should have a size equal to the number of points in the 2D 
+array times the number of samples in the force-ramp all times two (for 
+extend and retract).</p>
+<p>For example, a 64x64 with 1024 samples per force-ramp will have a data 
+length of:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">64</span><span class="o">^</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">=</span> <span class="mi">8388608</span>
+</pre></div>
+</div>
+<p>This length should be recorded in the header as <cite>*Ciao force image 
+listData length</cite> (keeping in mind the bytes/pixel).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filename</strong><span class="classifier">str</span></dt><dd><p>Path to NanoScope scan file.</p>
+</dd>
+<dt><strong>params</strong><span class="classifier">dict</span></dt><dd><p>Parameters dictionary. From <cite>get_params()</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>ndarray</dt><dd><p>NanoScope scan data, unpacked from raw bytes.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.nanoscope.read_fv_header">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.nanoscope.</span></span><span class="sig-name descname"><span class="pre">read_fv_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pyMFD.nanoscope.read_fv_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the header information from a Bruker/Veeco Nanoscope v7.2 file. 
+Returns a dictionary containing all of the lines from the header 
+organized under the sections:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>FFL  = b’*Force file list’</p></li>
+<li><p>CFIL = b’*Ciao force image list’</p></li>
+<li><p>CIL  = b’*Ciao image list’</p></li>
+<li><p>SL   = b’*Scanner list’</p></li>
+<li><p>CSL  = b’*Ciao scan list’</p></li>
+</ul>
+</div></blockquote>
+<p>Nanoscope header files are a mess. There will be different sections 
+depending on the type of data in the file. For more information see 
+Nanoscope User Guide and this informative forum post:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>[Nanoscope 7.3](<a class="reference external" href="https://physics-astronomy-manuals.wwu.edu/Nanosocpe%207.3%20User%20Guide.pdf">https://physics-astronomy-manuals.wwu.edu/Nanosocpe%207.3%20User%20Guide.pdf</a>) (broken link as of 2/23/2022)</p></li>
+<li><p>[Nanoscope 8.10](<a class="reference external" href="http://nanoqam.ca/wiki/lib/exe/fetch.php?media=nanoscope_software_8.10_user_guide-d_004-1025-000_.pdf">http://nanoqam.ca/wiki/lib/exe/fetch.php?media=nanoscope_software_8.10_user_guide-d_004-1025-000_.pdf</a>)</p></li>
+<li><p>[Forum post](<a class="reference external" href="http://nanoscaleworld.bruker-axs.com/nanoscaleworld/forums/p/538/1065.aspx">http://nanoscaleworld.bruker-axs.com/nanoscaleworld/forums/p/538/1065.aspx</a>)</p></li>
+</ul>
+</div></blockquote>
+<p>In the file header some parameters start with ‘&#64;’ instead of simply
+‘'. This is an indication to the software that the data that follows 
+is intended for a CIAO parameter object. After the ‘&#64;’, you might see a 
+number followed by a colon before the label. This number is what is 
+called a “group number” and can generally be ignored.</p>
+<p>Further, after the label and its colon, you will see a single 
+definition character of ‘V’, ‘C’, or ‘S’.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>V means _Value_ – a parameter that contains a double and a unit of 
+measure, and some scaling definitions.</p></li>
+<li><p>C means _Scale_ – a parameter that is simply a scaled version of 
+another.</p></li>
+<li><p>S means _Select_ – a parameter that describes some selection that 
+has been made</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filename</strong><span class="classifier">str</span></dt><dd><p>Filename of the NanoScope file.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>params</strong><span class="classifier">dict</span></dt><dd><p>Raw paramaters dictionary. Convert with <cite>convert_params()</cite></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.nanoscope.save_txt_data">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.nanoscope.</span></span><span class="sig-name descname"><span class="pre">save_txt_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.nanoscope.save_txt_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the converted data to an ASCII file using the same format as 
+exports from Nanoscope Analysis 2.0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data</strong><span class="classifier">ndarray</span></dt><dd><p>Converted data to be saved in ASCII format.</p>
+</dd>
+<dt><strong>filename</strong><span class="classifier">str</span></dt><dd><p>Filename to which the ASIC data should be saved.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyMFD.scan_params">
+<span id="pymfd-scan-params-module"></span><h2>pyMFD.scan_params module<a class="headerlink" href="#module-pyMFD.scan_params" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.scan_params.get_scan_params">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.scan_params.</span></span><span class="sig-name descname"><span class="pre">get_scan_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sp_filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pyMFD.scan_params.get_scan_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the scan parameters from a JSON file.</p>
+<p>The following is an example scan parameter file, with annotation. 
+JSON does not support comments, so anything after (and including) ‘#’ 
+should be removed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;02041411.001&quot;</span><span class="p">,</span>           <span class="c1"># Required</span>
+    <span class="s2">&quot;growth&quot;</span><span class="p">:</span> <span class="s2">&quot;Polished12072018&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sample&quot;</span><span class="p">:</span> <span class="s2">&quot;D1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;afm_spring_constant&quot;</span><span class="p">:</span> <span class="mi">39</span><span class="p">,</span>        <span class="c1"># Required [N/m]</span>
+    <span class="s2">&quot;afm_tip&quot;</span><span class="p">:</span> <span class="s2">&quot;tip19&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;thickness&quot;</span><span class="p">:</span> <span class="mf">160E-9</span><span class="p">,</span>              <span class="c1"># Required [m]</span>
+    <span class="s2">&quot;ignored&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+    <span class="s2">&quot;cantilevers&quot;</span><span class="p">:</span> <span class="p">[</span>                  <span class="c1"># Required (at least one cantilever definition)</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;D1a2&quot;</span><span class="p">,</span>           <span class="c1"># Required</span>
+            <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mf">2.7E-6</span><span class="p">,</span>          <span class="c1"># Required [m]</span>
+            <span class="s2">&quot;lin_ignore&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;fixed_edge&quot;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>         <span class="c1"># Required (guess in pixels at fixed end location relative to left side of scan)</span>
+            <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">26</span><span class="p">,</span> <span class="mi">13</span><span class="p">],</span>        <span class="c1"># Required (top left corner [x, y] in pixels of cantilever)</span>
+            <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">38</span><span class="p">,</span> <span class="mi">22</span><span class="p">]</span>           <span class="c1"># Required (bottom right corner [x, y] in pixels of cantilever)</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;D1a1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mf">2.7E-6</span><span class="p">,</span>
+            <span class="s2">&quot;lin_ignore&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;fixed_edge&quot;</span><span class="p">:</span> <span class="mi">26</span><span class="p">,</span>
+            <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">28</span><span class="p">,</span> <span class="mi">38</span><span class="p">],</span>
+            <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">44</span><span class="p">,</span> <span class="mi">49</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sp_filename</strong><span class="classifier">str</span></dt><dd><p>Filename string (passed to json.load()) pointing to scan parameter 
+JSON file.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>sc_params</strong><span class="classifier">dict</span></dt><dd><p>Dictionary containing parameters from scan parameters JSON file.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyMFD.summarize">
+<span id="pymfd-summarize-module"></span><h2>pyMFD.summarize module<a class="headerlink" href="#module-pyMFD.summarize" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.summarize.comp_mat_inspector">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.summarize.</span></span><span class="sig-name descname"><span class="pre">comp_mat_inspector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comp_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_piezo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tm_defl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r2s_mat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.summarize.comp_mat_inspector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the interactive compliance map inspector. This tool shows the 
+compliance map on the left, the selected force-deflection map in the 
+middle, and an R^2 map on the right. Click on any pixel in the 
+compliance map or the R^2 map to update the middle force-deflection 
+map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>comp_mat</strong><span class="classifier">ndarray</span></dt><dd><p>Compliance matrix from <cite>get_com_mat()</cite></p>
+</dd>
+<dt><strong>z_piezo</strong><span class="classifier">ndarray</span></dt><dd><p>Piezo displacement data. Used for central plot.</p>
+</dd>
+<dt><strong>tm_defl</strong><span class="classifier">ndarray</span></dt><dd><p>Tapping mode deflection data. Used for central plot.</p>
+</dd>
+<dt><strong>params</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of parameters. Load from JSON using <cite>get_scan_params()</cite>.</p>
+</dd>
+<dt><strong>fig_width</strong><span class="classifier">int, optional</span></dt><dd><p>Width of matplotlib figure in inches.</p>
+</dd>
+<dt><strong>r2s_mat</strong><span class="classifier">ndarray, optional</span></dt><dd><p>R^2 matrix to plot in third column. If not included, third column 
+is disabled.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>axs</strong><span class="classifier">Axes</span></dt><dd><p>Return matplotlibe axes used in figure.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.summarize.get_comp_mat">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.summarize.</span></span><span class="sig-name descname"><span class="pre">get_comp_mat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_piezo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tm_defl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linearize=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefile=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth_func=&lt;function</span> <span class="pre">smooth_z_tip&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.summarize.get_comp_mat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the compliance map. In other words, convert each force-deflection 
+ramp to a compliance value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>z_piezo</strong><span class="classifier">ndarray</span></dt><dd><p>Piezo displacement data as a numpy array.</p>
+</dd>
+<dt><strong>tm_defl</strong><span class="classifier">ndarray</span></dt><dd><p>Tapping mode deflection data as a numpy array.</p>
+</dd>
+<dt><strong>sc_params</strong><span class="classifier">dict</span></dt><dd><p>Dictionary containg parameters loaded from JSON file with 
+<cite>get_scan_params()</cite>.</p>
+</dd>
+<dt><strong>linearize:  boolean, optional, default: True</strong></dt><dd><p>If true, will take the cube root of the compliance data. This 
+linearizes the data in displacement, since the compliance equation 
+depends on the position along the cantilever to the third power 
+(see Euler cantilever equation).</p>
+</dd>
+<dt><strong>savefile</strong><span class="classifier">str, optional</span></dt><dd><p>If provided, the slopes will be saved to the file <cite>savefile</cite>.</p>
+</dd>
+<dt><strong>smooth_func</strong><span class="classifier">function, optional</span></dt><dd><p>This function will be applied to <cite>tm_defl</cite> to smooth the 
+force-deflection data.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>comp</strong><span class="classifier">ndarray</span></dt><dd><p>Compliance matrix. Shape should be square, with the size of the 
+sides being the square root of the number of force ramps.
+E.g. shape is (64, 64).</p>
+</dd>
+<dt><strong>r2s</strong><span class="classifier">ndarray</span></dt><dd><p>R^2 matrix. See <cite>comp</cite> for shape.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.summarize.get_start_end">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.summarize.</span></span><span class="sig-name descname"><span class="pre">get_start_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_piezo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_tip</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.summarize.get_start_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the start and end indices for the linear portion of z_piezo vs z_tip.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>z_piezo</strong><span class="classifier">ndarray</span></dt><dd><p>Z_piezo data as a numpy array.</p>
+</dd>
+<dt><strong>z_tip</strong><span class="classifier">ndarray</span></dt><dd><p>Z_tip data as a numpy array.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>start, end</strong><span class="classifier">int</span></dt><dd><p>Start and end indices.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.summarize.line_slope">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.summarize.</span></span><span class="sig-name descname"><span class="pre">line_slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_piezo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_tip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.summarize.line_slope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Algorithm for getting the slope of a force ramp. Applied to all force 
+ramps in the force volume data (4096 for 64x64 scans). The slope is 
+used to find the compliance at each point in the map.</p>
+<p>(The following diagram may not display properly in IDE tooltips.)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>\
+ \                                  <span class="o">^</span>
+  \                                 <span class="o">|</span>
+   \    <span class="n">__________________</span>        <span class="n">z_tip</span>
+    \  <span class="o">/</span>                            <span class="o">|</span>
+     \<span class="o">/</span>                             <span class="n">v</span>
+<span class="mf">0123456789.</span><span class="o">..</span> <span class="o">&lt;-</span> <span class="n">z_piezo</span> <span class="n">index</span>
+</pre></div>
+</div>
+<p>Algorithm needs to find slope of the linear section from 0 to 5. 
+However, the data is rarely this nice. A robust algorithm is needed 
+to handle most cases.</p>
+<p>Get an initial (start, end) estimate using <cite>get_start_end()</cite>.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>get_start_end()</cite> takes the derivative of z_tip and finds the 
+z_piezo location where that derivative is highest. This is the end 
+point.</p></li>
+<li><p>The start point is just 0.8% of the length of z_piezo (8 for ramps 
+with 1024 samples; 4 for ramps with 512 samples)</p></li>
+<li><p>The end point is reduced until the first zero crossing (before the 
+maximum) of the derivative of z_tip is found.</p></li>
+</ul>
+</div></blockquote>
+<p>This (start, end) value is used to fit to the linear region of the 
+force ramp. If R^2 is greater than 0.9, then this slope is returned.
+Otherwise, decrease the end value, fit again, and check R^2. This is 
+repeated until any of these conditions are met:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>R^2 is greater than 0.9, or</p></li>
+<li><p>There are less than 15 points between the start and end values, or</p></li>
+<li><p>The process has looped through 10 times without meeting either of 
+the above criteria.</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>z_piezo</strong><span class="classifier">ndarray</span></dt><dd><p>Z_piezo data as a numpy array.</p>
+</dd>
+<dt><strong>z_tip</strong><span class="classifier">ndarray</span></dt><dd><p>Z_tip data as a numpy array.</p>
+</dd>
+<dt><strong>index</strong><span class="classifier">int, optional</span></dt><dd><p>If <cite>index</cite> is supplied, this function will not loop through all 
+force-deflection ramps in the FV data. It will only look at the 
+ramp where the index of z_tip is <cite>index</cite>. Useful for code that 
+selects only one force-ramp to plot.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>slopes</strong><span class="classifier">ndarray</span></dt><dd><p>Slopes for each force ramp in scan. Shape is (<cite>size</cite>,), where 
+<cite>size</cite> is the total number of force ramps in scan.</p>
+</dd>
+<dt><strong>r2s</strong><span class="classifier">ndarray</span></dt><dd><p>R^2 array with same shape as <cite>slopes</cite>.</p>
+</dd>
+<dt><strong>s, e</strong><span class="classifier">int</span></dt><dd><p>Start and end indices actually used to bracket region of interest.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.summarize.onclick_mat">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.summarize.</span></span><span class="sig-name descname"><span class="pre">onclick_mat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.summarize.onclick_mat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Click event hander. Used to allow for inspection of the compliance map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>event</strong><span class="classifier">matplotlib.backend_bases.Event</span></dt><dd><p>Event fired when mouse clicked on compliance map.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.summarize.plot_z_tip">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.summarize.</span></span><span class="sig-name descname"><span class="pre">plot_z_tip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_piezo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_tip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.summarize.plot_z_tip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the z_tip data. Each pixel in the compliance map comes from 
+fitting to z_tip.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>row</strong><span class="classifier">int</span></dt><dd><p>Row from compliance map. Used along with <cite>col</cite> to identify specific 
+pixel.</p>
+</dd>
+<dt><strong>col</strong><span class="classifier">int</span></dt><dd><p>Column from compliance map. Used along with <cite>row</cite> to identify s
+pecific pixel.</p>
+</dd>
+<dt><strong>z_piezo</strong><span class="classifier">ndarray</span></dt><dd><p>Piezo displacement data.</p>
+</dd>
+<dt><strong>z_tip</strong><span class="classifier">ndarray</span></dt><dd><p>AFM tip displacement data.</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">int</span></dt><dd><p>Number of columns per compliance map.</p>
+</dd>
+<dt><strong>ax1, ax2</strong><span class="classifier">Axes</span></dt><dd><p>Two axes on which to plot. <cite>ax1</cite> is used for the z_tip data and 
+<cite>ax2</cite> is used of its derivative.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyMFD.summarize.smooth_z_tip">
+<span class="sig-prename descclassname"><span class="pre">pyMFD.summarize.</span></span><span class="sig-name descname"><span class="pre">smooth_z_tip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_tip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'movmean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyMFD.summarize.smooth_z_tip" title="Permalink to this definition">¶</a></dt>
+<dd><p>The raw force-deflection data from the AFM scan is frequently noisy. 
+This function performs either a moving average or a butterworth filter. 
+I found that doing two moving averages with a window size of 5 and then 
+11 works well. The data is first flipped to avoid a “lip” at the 
+beginning of the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>z_tip_smooth</strong><span class="classifier">ndarray</span></dt><dd><p>Filtered data. Same shape as <cite>z_tip</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyMFD">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyMFD" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">pyMFD</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">MFD-analysis</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="example.html">example module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">pyMFD package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">MFD-analysis</a><ul>
+      <li>Previous: <a href="example.html" title="previous chapter">example module</a></li>
+      <li>Next: <a href="pyMFD.tests.html" title="next chapter">pyMFD.tests package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Kyle G. Larsen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/pyMFD.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,834 @@
+pyMFD package
+*************
+
+
+Subpackages
+===========
+
+* pyMFD.tests package
+
+  * Submodules
+
+  * pyMFD.tests.test_FV module
+
+  * pyMFD.tests.test_cantilever module
+
+  * pyMFD.tests.test_nanoscope module
+
+  * pyMFD.tests.test_scan_params module
+
+  * Module contents
+
+
+Submodules
+==========
+
+
+pyMFD.FV module
+===============
+
+class pyMFD.FV.FV(fv_filename, fv_params_func=<function get_params>, fv_data_func=<function get_fv_data>, sc_params_filename=None, sc_params_func=<function get_scan_params>, fv_params_kwargs={}, fv_data_kwargs={}, sc_params_kwargs={})
+
+   Bases: "object"
+
+   This class represents a single force-volume scan. It contains the
+   relevant scan parameters and force-volume data.
+
+   Attributes:
+      **fv_filename** : str
+         String pointing to the force-volume scan file.
+
+      **sc_params_filename** : str
+         String pointing to the force-volume scan parameters file.
+
+      **fv_params** : dict
+         Parameters extracted from the force-volume scan file header.
+
+      **sc_params** : dict
+         Scan parameters extracted from scan parameters JSON file.
+
+      **z_piezo** : ndarray
+         Displacement of AFM piezo. Has size *ramp_len* (from
+         parameters  *samples_per_ramp*).
+
+      **tm_defl** : ndarray
+         Tapping mode deflection. Has shape (*ramp_len*, 2,
+         *num_curves*).  The 2 comes from having both an extension and
+         retraction and  *num_curves* is the number of force-ramps in
+         a scan, e.g. 4096.
+
+      **pixel_size** : float
+         Size of single pixel in force-volume map, in meters.
+
+      **_fv_params_func** : function
+         Function that returns the *fv_params* dictionary.
+
+      **_fv_data_func** : function
+         Function that returns the force-volume data.
+
+      **_sc_params_func** : function
+         Function that returns the *sv_params* dictionary.
+
+   -[ Methods ]-
+
+   +-----------------------------------------------+---------------------------------------------------+
+   | **get_extend():**                             | Get extenstion ramp data                          |
+   +-----------------------------------------------+---------------------------------------------------+
+   | **get_retract():**                            | Get retraction ramp data                          |
+   +-----------------------------------------------+---------------------------------------------------+
+   | **get_pixel_size([scan_size, scan_points]):** | Get pixel size                                    |
+   +-----------------------------------------------+---------------------------------------------------+
+   | **summarize([which_dir, summary_func]):**     | Summarize the ramp data (i.e. extract compliance) |
+   +-----------------------------------------------+---------------------------------------------------+
+
+   get_extend()
+
+      Return the force-volume data recorded during the extension of
+      the  AFM cantilever.
+
+      Returns:
+         ndarray
+            The extension curves of the tapping mode deflection data.
+            Shape is (ramp_length, 1, num_curves), e.g. (1024, 1,
+            4096)
+
+   get_pixel_size(scan_size=None, scan_points=None)
+
+      Calculate the size of a single pixel in the force-volume data.
+      Should be in units of meters.
+
+      Parameters:
+         **scan_size** : float, optional
+            The total size of the force-volume scan (in meters).
+
+         **scan_points** : int, optional
+            The number of force-deflection ramps in each line of the
+            scan.
+
+      Returns:
+         float
+            Size of pixel (in meters).
+
+   get_retract()
+
+      Return the force-volume data recorded during the retraction of
+      the  AFM cantilever.
+
+      Returns:
+         ndarray
+            The retraction curves of the tapping mode deflection data.
+            Shape is (ramp_length, 1, num_curves), e.g. (1024, 1,
+            4096)
+
+   summarize(which_dir='retrace', summary_func=<function get_comp_mat>, **kwargs)
+
+      Create a 2D representation of the force-volume data.
+
+      Parameters:
+         **which_dir** : str {‘trace’, ‘extend’, ‘retrace’,
+         ‘retract’}, int {0 for trace, 1 for retrace}
+            Select whether the trace/extension curves or the
+            retrace/retraction curves should be summarized.
+
+         **summary_func** : function
+            Function that will perform the summary. By default, this
+            is a function that takes *z_piezo*,  *tm_defl*, and
+            *sc_params* and returns the compliance matrix and R^2
+            matrix (how well each curve  was summarized).
+
+         ****kwargs** : dict
+            Arguments that are passed to *summary_func*.
+
+      Returns:
+         Default return values if *summary_func`=`get_comp_mat*.
+         ndarray
+            Compliance matrix. Shape should be square, with the size
+            of the  sides being the square root of the number of force
+            ramps. E.g. shape is (64, 64).
+
+         ndarray
+            R^2 matrix. See *comp* for shape.
+
+      See also: "pyMFD.summarize.get_comp_mat"
+
+pyMFD.cantilever module
+=======================
+
+pyMFD.cantilever.calc_modulus(fv, cant_num, rows_to_avg=1)
+
+   Calculate the modulus from cantilever compliance using both the
+   cubic  model and linear model.
+
+   Parameters:
+      **fv** : FV
+         Object of class FV, which represents a single force-volume
+         scan.
+
+      **cant_num** : int
+         Scans can contain more than one cantilever. This is an index
+         (starting at 0) to select  which cantilever to use.
+
+      **rows_to_avg** : int, optional
+         Total number of rows to average. Will always be symmetric,
+         rounded  up. Passing in 2 or 3 is equivalent.
+
+   Returns:
+      **E, offset** : float
+         Modulus and offset from the cubic method
+
+      **E_lin, offset_lin** : float
+         Modulus and offset using the linear method
+
+pyMFD.cantilever.calc_modulus_offset(slope, intercept, width, thickness)
+
+   Calculate the modulus and fixed end offset.
+
+   Parameters:
+      **slope** : float
+         Slope returned from *fit_compliance_linear()*
+
+      **intercept** : float
+         Intercept returned from *fit_compliance_linear()*
+
+      **width** : float
+         Width of cantilever
+
+      **thick** : float
+         Thickness of cantilever
+
+   Returns:
+      **E, c** : float
+         Young’s modulus and position offset (*c*).
+
+pyMFD.cantilever.fit_compliance(positions, compliances, width, thickness, func=<function fit_fun>)
+
+   Standardized and then fit the non-linearized (i.e. original)
+   compliance  data.
+
+   Parameters:
+      **position** : ndarray
+         Vector of positions (in meters).
+
+      **compliance** : ndarray
+         Vector of linearized compliance.
+
+      **width** : float
+         Width of cantilever
+
+      **thick** : float
+         Thickness of cantilever
+
+      **func** : function
+   Returns:
+      **E** : float
+         Young’s modulus
+
+      **pos_off** : float
+         Offset in initial guess of fixed end
+
+      **a** : float
+         This is the *a* parameter in *fit_fun()*.
+
+pyMFD.cantilever.fit_compliance_linear(position, compliance)
+
+   Fit the linearized position vs compliance graph.
+
+   1/k       = (4/(E*w*t^3))*(L-c)^3 1/k^(1/3) =
+   (4/(E*w*t^3))^(1/3)*(L-c) 1/k^(1/3) = a*(L-c) 1/k^(1/3) = a*L-a*c y
+   = m*x+b
+
+   The slope is proportional to E. To get the fixed end offset, divide
+   the  intercept by the slope (and take negative).
+
+   Parameters:
+      **position** : ndarray
+         Vector of positions (in meters).
+
+      **compliance** : ndarray
+         Vector of linearized compliance.
+
+   Returns:
+      **res.slope** : float
+         Slope of the compliance data.
+
+      **res.intercept** : float
+         Y-intercept of the compliance data.
+
+pyMFD.cantilever.fit_fun(L, a, c)
+
+   Function to fit with scipy.optimize.curve_fit.
+      compliance = 1/k = 1/a*(L - c)**3
+
+   Parameters:
+      **L** : float
+         Position along cantilever
+
+      **a** : float
+         Combination of width, thickness, and modulus.
+
+      **c** : float
+         Offset from L.
+
+   Returns:
+      float
+         Compliance (inverse of stiffness)
+
+pyMFD.cantilever.get_cantilever_params(params, cant_num)
+
+   Get the important parameters from the parameter dictionary (loaded
+   from  JSON) for a specific cantilever.
+
+   Parameters:
+      **params** : dict
+         Dictionary of parameters. Load from JSON using
+         *get_scan_params()*.  Pass in only parameter for single
+         sample.
+
+      **cant_num** : int
+         Cantilever number for which to get params.
+
+   Returns:
+      **thick, width** : float
+         Thickness and width of the cantilever.
+
+      **igno** : int
+         Number of pixels to ignore from fixed end.
+
+      **fixed** : int
+         Pixel number of fixed end.
+
+      **start, end** : int
+         Start and end coordinates describing cantilever.
+
+      **col_s, col_e** : int
+         Column start and column end (i.e. the x-coordinate).
+
+pyMFD.cantilever.get_cantilever_pos(pixel_size, size)
+
+   Returns the pixel locations in meters across a row.
+
+   Parameters:
+      **pixel_size** : float
+         Size of pixel in meters.
+
+      **size** : int
+         Size of scan (number of pixels in scan).
+
+   Returns:
+      ndarray
+         List of cantilever positions (in meters).
+
+pyMFD.cantilever.get_compliance_row(comp_mat, row, rows_to_avg=1)
+
+   Return a full row of the compliance map. If rows_to_avg is greater
+   than  1, then rows above and below *row* will be averaged.
+
+   Parameters:
+      **comp_mat** : ndarray
+         Compliance matrix
+
+      **row** : int
+         Row of scan to extract
+
+      **rows_to_avg** : int, optional
+         Total number of rows to average. Will always be symmetric,
+         rounded  up. Passing in 2 or 3 is equivalent.
+
+   Returns:
+      **comp_row** : ndarray
+         Returns the compliance data (possibly averaged).
+
+pyMFD.cantilever.offset_to_col_coord(offset, col_s, pixel_size)
+
+   TODO: Think of a better name for this function. TODO: Remove if
+   unused
+
+   Takes the offset calculated from fitting the the compliance row and
+   return where that offset is in compliance map space.
+
+   Parameters:
+      **offset** : float
+         Offset calculated by fitting. This is how far the estimated
+         fixed  end is from the origin selected for *position* array.
+
+      **col_s** : int
+         Column (from compliance map). This is the fixed end location.
+
+      **pixel_size** : float
+         Size of single pixel in meters.
+
+   Returns:
+      int
+         Offset location in column coordinates.
+
+
+pyMFD.nanoscope module
+======================
+
+pyMFD.nanoscope.convert_fv_data(data: numpy.ndarray, params: dict) -> tuple
+
+   Convert from ADC counts to volts. Returns the piezo ramp deflection
+   *z_piezo* and the force-volume TM deflection data in volts in a
+   tuple: (z_piezo, tm_defl).
+
+   Parameters:
+      **data** : ndarray
+         Raw data from force-volume file (from *read_fv_data()*).
+
+      **params** : dict
+         Parameters dictionary. From *get_params()*.
+
+   Returns:
+      **z_piezo** : ndarray
+         Displacement of AFM piezo. Has size *ramp_len* (from
+         parameters  *samples_per_ramp*).
+
+      **tm_defl** : ndarray
+         Tapping mode deflection. Has shape (*ramp_len*, 2,
+         *num_curves*).  The 2 comes from having both an extension and
+         retraction.
+
+pyMFD.nanoscope.convert_params(old_params, custom_to_extract=[])
+
+   Convert the parameters from the NanoScope name to a new (universal)
+   name. If this code is adapted to new file formats, a new
+   *convert_params* function should return these same new parameters.
+
+   These are the parameters we need:
+
+   CFIL
+
+      * Data offset
+
+      * Data length
+
+      * Bytes/pixel
+
+      * Samps/line
+
+      * @4:Ramp size
+
+   CSL
+
+      * Samps/line
+
+      * @2:TMDeflectionLimit
+
+   SL
+
+      * @Sens. Zsens
+
+   Parameters:
+      **old_params** : dict
+         Original parameter dictionary loaded with *read_fv_header()*
+
+      **custom_to_extract** : array of tuples, optional
+         This function will also convert any additional parameters
+         provided  here. Follow tuple format in function:  (Section,
+         Parameter Name, New parameter name, Function to convert  from
+         bytestring to desired type)
+
+   Returns:
+      **params** : dict
+         Params dictionary with new parameter names.
+
+pyMFD.nanoscope.get_fv_data(filename: str, params: dict) -> tuple
+
+   Get *z_piezo* and *tm_defl*. *params* should be the converted,
+   generalized parameter dictionary.
+
+   Parameters:
+      **filename** : str
+         Path to NanoScope scan file.
+
+      **params** : dict
+         Parameters dictionary. From *get_params()*.
+
+   Returns:
+      **z_piezo** : ndarray
+         Displacement of AFM piezo. Has size *ramp_len* (from
+         parameters  *samples_per_ramp*).
+
+      **tm_defl** : ndarray
+         Tapping mode deflection. Has shape (*ramp_len*, 2,
+         *num_curves*).  The 2 comes from having both an extension and
+         retraction.
+
+pyMFD.nanoscope.get_params(filename: str) -> dict
+
+   Get the parameters from the NanoScope file header.
+
+   Parameters:
+      **filename** : str
+         Path to NanoScope scan file.
+
+   Returns:
+      **params** : dict
+         Params dictionary with new parameter names.
+
+pyMFD.nanoscope.read_fv_data(filename: str, params: dict) -> numpy.ndarray
+
+   Read the force-volume or force-ramp data from a Nanoscope file. The
+   data is converted from binary representation to a float64
+   representation of the the SPM data in ADC counts. Convert to volts
+   using *convert_fv_data*.
+
+   A force-volume scan contains three dimensions of data. For every
+   point  in a 2D array, two force-ramps are recorded (one for
+   extension towards  the sample and one for retraction – also called
+   trace and retrace).
+
+   The raw data should have a size equal to the number of points in
+   the 2D  array times the number of samples in the force-ramp all
+   times two (for  extend and retract).
+
+   For example, a 64x64 with 1024 samples per force-ramp will have a
+   data  length of:
+
+      64^2 * 1024 * 2 = 8388608
+
+   This length should be recorded in the header as **Ciao force image
+   listData length* (keeping in mind the bytes/pixel).
+
+   Parameters:
+      **filename** : str
+         Path to NanoScope scan file.
+
+      **params** : dict
+         Parameters dictionary. From *get_params()*.
+
+   Returns:
+      ndarray
+         NanoScope scan data, unpacked from raw bytes.
+
+pyMFD.nanoscope.read_fv_header(filename: str) -> dict
+
+   Read the header information from a Bruker/Veeco Nanoscope v7.2
+   file.  Returns a dictionary containing all of the lines from the
+   header  organized under the sections:
+
+      * FFL  = b’*Force file list’
+
+      * CFIL = b’*Ciao force image list’
+
+      * CIL  = b’*Ciao image list’
+
+      * SL   = b’*Scanner list’
+
+      * CSL  = b’*Ciao scan list’
+
+   Nanoscope header files are a mess. There will be different sections
+   depending on the type of data in the file. For more information see
+   Nanoscope User Guide and this informative forum post:
+
+      * [Nanoscope 7.3](https://physics-astronomy-
+        manuals.wwu.edu/Nanosocpe%207.3%20User%20Guide.pdf) (broken
+        link as of 2/23/2022)
+
+      * [Nanoscope 8.10](http://nanoqam.ca/wiki/lib/exe/fetch.php?med
+        ia=nanoscope_software_8.10_user_guide-d_004-1025-000_.pdf)
+
+      * [Forum post](http://nanoscaleworld.bruker-
+        axs.com/nanoscaleworld/forums/p/538/1065.aspx)
+
+   In the file header some parameters start with ‘@’ instead of simply
+   ‘'. This is an indication to the software that the data that
+   follows  is intended for a CIAO parameter object. After the ‘@’,
+   you might see a  number followed by a colon before the label. This
+   number is what is  called a “group number” and can generally be
+   ignored.
+
+   Further, after the label and its colon, you will see a single
+   definition character of ‘V’, ‘C’, or ‘S’.
+
+      * V means _Value_ – a parameter that contains a double and a
+        unit of  measure, and some scaling definitions.
+
+      * C means _Scale_ – a parameter that is simply a scaled version
+        of  another.
+
+      * S means _Select_ – a parameter that describes some selection
+        that  has been made
+
+   Parameters:
+      **filename** : str
+         Filename of the NanoScope file.
+
+   Returns:
+      **params** : dict
+         Raw paramaters dictionary. Convert with *convert_params()*
+
+pyMFD.nanoscope.save_txt_data(data, filename)
+
+   Save the converted data to an ASCII file using the same format as
+   exports from Nanoscope Analysis 2.0.
+
+   Parameters:
+      **data** : ndarray
+         Converted data to be saved in ASCII format.
+
+      **filename** : str
+         Filename to which the ASIC data should be saved.
+
+
+pyMFD.scan_params module
+========================
+
+pyMFD.scan_params.get_scan_params(sp_filename: str) -> dict
+
+   Loads the scan parameters from a JSON file.
+
+   The following is an example scan parameter file, with annotation.
+   JSON does not support comments, so anything after (and including)
+   ‘#’  should be removed:
+
+      {
+          "name": "02041411.001",           # Required
+          "growth": "Polished12072018",
+          "sample": "D1",
+          "afm_spring_constant": 39,        # Required [N/m]
+          "afm_tip": "tip19",
+          "thickness": 160E-9,              # Required [m]
+          "ignored": false,
+          "cantilevers": [                  # Required (at least one cantilever definition)
+              {
+                  "name": "D1a2",           # Required
+                  "width": 2.7E-6,          # Required [m]
+                  "lin_ignore": 0,
+                  "fixed_edge": 24,         # Required (guess in pixels at fixed end location relative to left side of scan)
+                  "start": [26, 13],        # Required (top left corner [x, y] in pixels of cantilever)
+                  "end": [38, 22]           # Required (bottom right corner [x, y] in pixels of cantilever)
+              },
+              {
+                  "name": "D1a1",
+                  "width": 2.7E-6,
+                  "lin_ignore": 0,
+                  "fixed_edge": 26,
+                  "start": [28, 38],
+                  "end": [44, 49]
+              }
+          ]
+      }
+
+   Parameters:
+      **sp_filename** : str
+         Filename string (passed to json.load()) pointing to scan
+         parameter  JSON file.
+
+   Returns:
+      **sc_params** : dict
+         Dictionary containing parameters from scan parameters JSON
+         file.
+
+
+pyMFD.summarize module
+======================
+
+pyMFD.summarize.comp_mat_inspector(comp_mat, z_piezo, tm_defl, params, fig_width=10, r2s_mat=None)
+
+   Create the interactive compliance map inspector. This tool shows
+   the  compliance map on the left, the selected force-deflection map
+   in the  middle, and an R^2 map on the right. Click on any pixel in
+   the  compliance map or the R^2 map to update the middle force-
+   deflection  map.
+
+   Parameters:
+      **comp_mat** : ndarray
+         Compliance matrix from *get_com_mat()*
+
+      **z_piezo** : ndarray
+         Piezo displacement data. Used for central plot.
+
+      **tm_defl** : ndarray
+         Tapping mode deflection data. Used for central plot.
+
+      **params** : dict
+         Dictionary of parameters. Load from JSON using
+         *get_scan_params()*.
+
+      **fig_width** : int, optional
+         Width of matplotlib figure in inches.
+
+      **r2s_mat** : ndarray, optional
+         R^2 matrix to plot in third column. If not included, third
+         column  is disabled.
+
+   Returns:
+      **axs** : Axes
+         Return matplotlibe axes used in figure.
+
+pyMFD.summarize.get_comp_mat(z_piezo, tm_defl, sc_params, linearize=True, savefile=None, smooth_func=<function smooth_z_tip>, **kwargs)
+
+   Get the compliance map. In other words, convert each force-
+   deflection  ramp to a compliance value.
+
+   Parameters:
+      **z_piezo** : ndarray
+         Piezo displacement data as a numpy array.
+
+      **tm_defl** : ndarray
+         Tapping mode deflection data as a numpy array.
+
+      **sc_params** : dict
+         Dictionary containg parameters loaded from JSON file with
+         *get_scan_params()*.
+
+      **linearize:  boolean, optional, default: True**
+         If true, will take the cube root of the compliance data. This
+         linearizes the data in displacement, since the compliance
+         equation  depends on the position along the cantilever to the
+         third power  (see Euler cantilever equation).
+
+      **savefile** : str, optional
+         If provided, the slopes will be saved to the file *savefile*.
+
+      **smooth_func** : function, optional
+         This function will be applied to *tm_defl* to smooth the
+         force-deflection data.
+
+   Returns:
+      **comp** : ndarray
+         Compliance matrix. Shape should be square, with the size of
+         the  sides being the square root of the number of force
+         ramps. E.g. shape is (64, 64).
+
+      **r2s** : ndarray
+         R^2 matrix. See *comp* for shape.
+
+pyMFD.summarize.get_start_end(z_piezo, z_tip)
+
+   Get the start and end indices for the linear portion of z_piezo vs
+   z_tip.
+
+   Parameters:
+      **z_piezo** : ndarray
+         Z_piezo data as a numpy array.
+
+      **z_tip** : ndarray
+         Z_tip data as a numpy array.
+
+   Returns:
+      **start, end** : int
+         Start and end indices.
+
+pyMFD.summarize.line_slope(z_piezo, z_tip, index=None)
+
+   Algorithm for getting the slope of a force ramp. Applied to all
+   force  ramps in the force volume data (4096 for 64x64 scans). The
+   slope is  used to find the compliance at each point in the map.
+
+   (The following diagram may not display properly in IDE tooltips.)
+
+      \
+       \                                  ^
+        \                                 |
+         \    __________________        z_tip
+          \  /                            |
+           \/                             v
+      0123456789... <- z_piezo index
+
+   Algorithm needs to find slope of the linear section from 0 to 5.
+   However, the data is rarely this nice. A robust algorithm is needed
+   to handle most cases.
+
+   Get an initial (start, end) estimate using *get_start_end()*.
+
+      * *get_start_end()* takes the derivative of z_tip and finds the
+        z_piezo location where that derivative is highest. This is the
+        end  point.
+
+      * The start point is just 0.8% of the length of z_piezo (8 for
+        ramps  with 1024 samples; 4 for ramps with 512 samples)
+
+      * The end point is reduced until the first zero crossing (before
+        the  maximum) of the derivative of z_tip is found.
+
+   This (start, end) value is used to fit to the linear region of the
+   force ramp. If R^2 is greater than 0.9, then this slope is
+   returned. Otherwise, decrease the end value, fit again, and check
+   R^2. This is  repeated until any of these conditions are met:
+
+      * R^2 is greater than 0.9, or
+
+      * There are less than 15 points between the start and end
+        values, or
+
+      * The process has looped through 10 times without meeting either
+        of  the above criteria.
+
+   Parameters:
+      **z_piezo** : ndarray
+         Z_piezo data as a numpy array.
+
+      **z_tip** : ndarray
+         Z_tip data as a numpy array.
+
+      **index** : int, optional
+         If *index* is supplied, this function will not loop through
+         all  force-deflection ramps in the FV data. It will only look
+         at the  ramp where the index of z_tip is *index*. Useful for
+         code that  selects only one force-ramp to plot.
+
+   Returns:
+      **slopes** : ndarray
+         Slopes for each force ramp in scan. Shape is (*size*,), where
+         *size* is the total number of force ramps in scan.
+
+      **r2s** : ndarray
+         R^2 array with same shape as *slopes*.
+
+      **s, e** : int
+         Start and end indices actually used to bracket region of
+         interest.
+
+pyMFD.summarize.onclick_mat(event)
+
+   Click event hander. Used to allow for inspection of the compliance
+   map.
+
+   Parameters:
+      **event** : matplotlib.backend_bases.Event
+         Event fired when mouse clicked on compliance map.
+
+pyMFD.summarize.plot_z_tip(row, col, z_piezo, z_tip, size, ax1, ax2)
+
+   Plot the z_tip data. Each pixel in the compliance map comes from
+   fitting to z_tip.
+
+   Parameters:
+      **row** : int
+         Row from compliance map. Used along with *col* to identify
+         specific  pixel.
+
+      **col** : int
+         Column from compliance map. Used along with *row* to identify
+         s pecific pixel.
+
+      **z_piezo** : ndarray
+         Piezo displacement data.
+
+      **z_tip** : ndarray
+         AFM tip displacement data.
+
+      **size** : int
+         Number of columns per compliance map.
+
+      **ax1, ax2** : Axes
+         Two axes on which to plot. *ax1* is used for the z_tip data
+         and  *ax2* is used of its derivative.
+
+pyMFD.summarize.smooth_z_tip(z_tip, method='movmean')
+
+   The raw force-deflection data from the AFM scan is frequently
+   noisy.  This function performs either a moving average or a
+   butterworth filter.  I found that doing two moving averages with a
+   window size of 5 and then  11 works well. The data is first flipped
+   to avoid a “lip” at the  beginning of the data.
+
+   Returns:
+      **z_tip_smooth** : ndarray
+         Filtered data. Same shape as *z_tip*.
+
+
+Module contents
+===============
