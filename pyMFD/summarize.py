@@ -98,19 +98,23 @@ def line_slope(z_piezo, z_tip, index = None):
 
     (The following diagram may not display properly in IDE tooltips.)
     
-    \
-     \                                  ^
-      \                                 |
-       \    __________________        z_tip
-        \  /                            |
-         \/                             v
-    0123456789... <- z_piezo index
+    ::
+
+        \\
+         \                                  ^
+          \                                 |
+           \    __________________        z_tip
+            \  /                            |
+             \/                             v
+        0123456789... <- z_piezo index
+    
     
     Algorithm needs to find slope of the linear section from 0 to 5. 
     However, the data is rarely this nice. A robust algorithm is needed 
     to handle most cases.
     
     Get an initial (start, end) estimate using `get_start_end()`.
+    
      - `get_start_end()` takes the derivative of z_tip and finds the 
        z_piezo location where that derivative is highest. This is the end 
        point.
@@ -123,6 +127,7 @@ def line_slope(z_piezo, z_tip, index = None):
     force ramp. If R^2 is greater than 0.9, then this slope is returned.
     Otherwise, decrease the end value, fit again, and check R^2. This is 
     repeated until any of these conditions are met:
+
      - R^2 is greater than 0.9, or 
      - There are less than 15 points between the start and end values, or
      - The process has looped through 10 times without meeting either of 

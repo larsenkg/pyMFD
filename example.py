@@ -3,11 +3,13 @@ from pyMFD.FV import FV
 from pyMFD.summarize import comp_mat_inspector
 from pyMFD.cantilever import calc_modulus
 import matplotlib.pyplot as plt
+import os
 
 use_inspector = False
 
-spm_file = "data/examples/02041411.001"    # Example force-volume scan
-fv       = FV(spm_file)                    # Load force-volume scan
+path     = os.path.abspath(os.path.dirname(__file__))
+spm_file = os.path.join(path, "data/examples/02041411.001")  # Example force-volume scan
+fv       = FV(spm_file)                                      # Load force-volume scan
 
 print(fv.tm_defl.shape)
 
