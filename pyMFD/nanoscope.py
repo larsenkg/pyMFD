@@ -35,9 +35,13 @@ def read_fv_header(filename: str) -> dict:
      - C means _Scale_ -- a parameter that is simply a scaled version of another.
      - S means _Select_ -- a parameter that describes some selection that has been made
 
+    Parameters
+    ----------
+    filename: str
+        Filename of the NanoScope file.
     '''
 
-    # May be usefule:
+    # May be useful:
     #  \*Ciao scan list\Scan Size: 15000 nm
     #  \*Ciao scan list\Samps/line: 64   # Force volume must be square.
 
@@ -69,7 +73,7 @@ def read_fv_header(filename: str) -> dict:
                 else:
                     params[key][index][args[0]] = ""
             
-            # TO DO: I should be able to remove this failsafe.
+            # TODO: I should be able to remove this failsafe.
             # Don't read more than 1000 lines.
             count += count
             if count > 1000:
@@ -89,6 +93,12 @@ def read_fv_header(filename: str) -> dict:
 
 def convert_params(old_params, custom_to_extract = []):
     '''
+    Convert the parameters from the NanoScope name to a new (universal) name.
+    If this code is adapted to new file formats, a new `convert_params` function
+    should return these same new parameters.
+
+    These are the parameters we need:
+
     CFIL
      - Data offset
      - Data length
@@ -102,6 +112,16 @@ def convert_params(old_params, custom_to_extract = []):
 
     SL
      - @Sens. Zsens
+
+    Parameters
+    ----------
+    old_params: dict
+        Original parameter dictionary loaded with `read_fv_header()`
+    custom_to_extract: array of tuples, optional
+        This function will also convert any additional parameters provided here. 
+        Follow tuple format in function: 
+        (Section, Parameter Name, New parameter name, Function to convert from bytestring to desired type)
+
     '''
 
     from_value_f = lambda x: float(x.split()[-2])
@@ -151,7 +171,14 @@ def read_fv_data(filename: str, params: dict) -> np.ndarray:
     For example, a 64x64 with 1024 samples per force-ramp will have a data length of:
      - 64^2 * 1024 * 2 = 8388608
 
-     This length should be recorded in the header as `\*Ciao force image list\Data length` (keeping in mind the bytes/pixel).
+    This length should be recorded in the header as `\*Ciao force image list\Data length` (keeping in mind the bytes/pixel).
+
+    Parameters
+    ----------
+    filename: str
+        Path to NanoScope scan file.
+    params: dict
+        Parameters dictionary. From `get_params()`.
     '''
     offset      = params["fv_data_offset"]
     data_length = params["fv_data_length"]
@@ -178,10 +205,17 @@ def read_fv_data(filename: str, params: dict) -> np.ndarray:
     return np.array(unpack(unpack_fmt, raw_data), dtype='float64')
     
     
-def convert_fv_data(data: np.ndarray, params: str) -> tuple:
+def convert_fv_data(data: np.ndarray, params: dict) -> tuple:
     '''
     Convert from ADC counts to volts. Returns the piezo ramp deflection `z_piezo` and the 
     force-volume TM deflection data in volts in a tuple: (z_piezo, tm_defl).
+
+    Parameters
+    ----------
+    data: ndarray
+        Raw data from force-volume file (from `read_fv_data()`).
+    params: dict
+        Parameters dictionary. From `get_params()`.
     '''
     z_sens     = params["piezo_nm_per_volt"]
     ramp_size  = params["ramp_size"]
@@ -204,13 +238,30 @@ def convert_fv_data(data: np.ndarray, params: str) -> tuple:
     return (z_piezo, tm_defl)
 
 def get_fv_data(filename: str, params: dict) -> tuple:
-    '''Get the `z_piezo` deflection ramp. `params` should be the converted, generalized parameter dictionary.'''
+    '''
+    Get the `z_piezo` deflection ramp. `params` should be the converted, generalized parameter dictionary.
+    
+    Parameters
+    ----------
+    filename: str
+        Path to NanoScope scan file.
+    params: dict
+        Parameters dictionary. From `get_params()`.
+    '''
     data  = read_fv_data(filename, params)
 
     # Convert to metric units
     return convert_fv_data(data, params)
 
 def get_params(filename: str) -> dict:
+    '''
+    Get the parameters from the NanoScope file header.
+
+    Parameters
+    ----------
+    filename: str
+        Path to NanoScope scan file.
+    '''
     all_fv_params = read_fv_header(filename )
     fv_params     = convert_params(all_fv_params)
 
@@ -219,6 +270,13 @@ def get_params(filename: str) -> dict:
 def save_txt_data(data, filename):
     '''
     Save the converted data to an ASCII file using the same format as exports from Nanoscope Analysis 2.0.
+
+    Parameters
+    ----------
+    data: ndarray
+        Converted data to be saved in ASCII format.
+    filename: str
+        Filename to which the ASIC data should be saved.
     '''
     header = "Calc_Ramp_Ex_nm\tCalc_Ramp_Rt_nm\tDefl_mV_Ex\tDefl_mV_Rt\tpN Not Available\tpN Not Available\t"
     np.savetxt(filename, data, delimiter='\t', fmt='%1.6e', header=header, comments='')

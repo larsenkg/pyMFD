@@ -1,9 +1,11 @@
 import json
 
 def get_scan_params(sp_filename: str) -> dict:
-    """Loads the scan parameters from a JSON file.
+    '''
+    Loads the scan parameters from a JSON file.
 
-    The following is an example scan parameter file, with annotation. JSON does not support comments, so anything after '#' should be removed.
+    The following is an example scan parameter file, with annotation. JSON does not support comments, 
+    so anything after (and including) '#' should be removed.
 
     {
         "name": "02041411.001",           # Required
@@ -33,7 +35,11 @@ def get_scan_params(sp_filename: str) -> dict:
         ]
     }
 
-    """
+    Parameters
+    ----------
+    sp_filename: str
+        Filename string (passed to json.load()) pointing to scan parameter JSON file.
+    '''
     with open(sp_filename) as file:
         # Get the scan parameters.
         sc_params = json.load(file)
