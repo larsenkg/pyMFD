@@ -51,6 +51,15 @@ class FV:
         self.pixel_size              = self.get_pixel_size()
 
     def get_pixel_size(self, scan_size=None, scan_points=None):
+        '''
+        Calculate the size of a single pixel in the force-volume data. Should be in units of meters.
+        Parameters
+        ----------
+        scan_size: float, optional
+            The total size of the force-volume scan (in meters).
+        scan_points: int, optional
+            The number of force-deflection ramps in each line of the scan.
+        '''
         if scan_size is None:
             scan_size   = self.fv_params["scan_size"]
 
@@ -60,9 +69,15 @@ class FV:
         return scan_size / scan_points
 
     def get_extend(self):
+        '''
+        Return the force-volume data recorded during the extension of the AFM cantilever.
+        '''
         return self.tm_defl[:, 0, :]
 
     def get_retract(self):
+        '''
+        Return the force-volume data recorded during the retraction of the AFM cantilever.
+        '''
         return self.tm_defl[:, 1, :]
 
     def summarize(self, which_dir='retrace', summary_func=get_comp_mat, **kwargs):
