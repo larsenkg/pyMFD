@@ -1,3 +1,5 @@
+from pyMFD.cantilever import get_cantilever_params
+
 import matplotlib.pyplot  as plt
 import matplotlib.patches as patches
 import numpy              as np
@@ -241,34 +243,6 @@ def get_comp_mat(z_piezo, tm_defl, sc_params, linearize = True, savefile = None,
     return (comp, r2s)
 
 
-
-# Move to new file?
-
-def get_cantilever_params(params, cant_num):
-    '''
-    Get the important parameters from the parameter dictionary (loaded from JSON) for a specific cantilever.
-
-    Parameters
-    ----------
-    params: dict
-        Dictionary of parameters. Load from JSON using `get_scan_params()`. Pass in only parameter for single sample.
-    cant_num: int
-        Cantilever number for which to get params.
-    '''
-    thick = params["thickness"]
-    width = params["cantilevers"][cant_num]["width"]
-    start = params["cantilevers"][cant_num]["start"]
-    end   = params["cantilevers"][cant_num]["end"]
-    igno  = params["cantilevers"][cant_num]["lin_ignore"]
-    fixed = params["cantilevers"][cant_num]["fixed_edge"] - 1 # Parameters file indices start at 1, but in python they start at 0
-    start = np.array(start) - 1
-    end   = np.array(end)   - 1
-    row   = (end[1] + start[1]) // 2 # Find center line of cantilever
-    col_s = start[0] + igno
-    col_e = end[0]
-    
-    return (thick, width, start, end, igno, fixed, start, end, row, col_s, col_e)
-
 def comp_mat_inspector(comp_mat, z_piezo, tm_defl, params, fig_width = 10, r2s_mat = None):
     '''
     Create the interactive compliance map inspector. This tool shows the compliance map on the left, 
@@ -337,7 +311,7 @@ def comp_mat_inspector(comp_mat, z_piezo, tm_defl, params, fig_width = 10, r2s_m
 
     # Add lines over points to fit
     for cant_num in range(len(params["cantilevers"])):
-        (thick, width, start, end, igno, fixed, start, end, row, col_s, col_e) = get_cantilever_params(params, cant_num)
+        (thick, width, igno, fixed, start, end, row, col_s, col_e) = get_cantilever_params(params, cant_num)
 
         axs["A"].plot([col_s, col_e], [row+0.5, row+0.5], 'r')
 
