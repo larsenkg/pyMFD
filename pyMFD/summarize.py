@@ -10,17 +10,23 @@ import math
 
 def smooth_z_tip(z_tip, method = "movmean"):
     '''
-    The raw force-deflection data from the AFM scan is frequently noisy. This function performs
-    either a moving average or a butterworth filter. I found that doing two moving averages with
-    a window size of 5 and then 11 works well. The data is first flipped to avoid a "lip" at the 
+    The raw force-deflection data from the AFM scan is frequently noisy. 
+    This function performs either a moving average or a butterworth filter. 
+    I found that doing two moving averages with a window size of 5 and then 
+    11 works well. The data is first flipped to avoid a "lip" at the 
     beginning of the data.
 
     Parameter
     ---------
-    z_tip: ndarray
+    z_tip : ndarray
         Numpy array containing the z_tip force-deflection data.
-    method: {"movmean", "butter"}, optional, default: "movmean"
+    method : {"movmean", "butter"}, optional, default: "movmean"
         Select smoothing method. Can be 'movmean' or 'butter'. 
+
+    Returns
+    -------
+    z_tip_smooth : ndarray
+        Filtered data. Same shape as `z_tip`.
     '''
     if method == "butter":
         b, a         = signal.butter(1, 0.1)
@@ -38,11 +44,15 @@ def get_start_end(z_piezo, z_tip):
 
     Parameters
     ----------
-    z_piezo: ndarray
+    z_piezo : ndarray
         Z_piezo data as a numpy array.
-    z_tip: ndarray
+    z_tip : ndarray
         Z_tip data as a numpy array.
     
+    Returns
+    -------
+    start, end : int
+        Start and end indices.
     '''
     dz_tip   = np.diff(z_tip)
     max_indx = np.argmax(dz_tip)  # TODO: this isn't great. Should use peak find or get first zero crossing.
@@ -82,8 +92,10 @@ def get_start_end(z_piezo, z_tip):
 
 def line_slope(z_piezo, z_tip, index = None):
     '''
-    Algorithm for getting the slope of a force ramp. Applied to all force ramps in the force volume data (4096 for 64x64 scans). 
-    The slope is used to find the compliance at each point in the map.
+    Algorithm for getting the slope of a force ramp. Applied to all force 
+    ramps in the force volume data (4096 for 64x64 scans). The slope is 
+    used to find the compliance at each point in the map.
+
     (The following diagram may not display properly in IDE tooltips.)
     
     \
@@ -99,26 +111,44 @@ def line_slope(z_piezo, z_tip, index = None):
     to handle most cases.
     
     Get an initial (start, end) estimate using `get_start_end()`.
-     - `get_start_end()` takes the derivative of z_tip and finds the z_piezo location where that derivative is highest. This is the end point.
-     - The start point is just 0.8% of the length of z_piezo (8 for ramps with 1024 samples; 4 for ramps with 512 samples)
-     - The end point is reduced until the first zero crossing (before the maximum) of the derivative of z_tip is found.
+     - `get_start_end()` takes the derivative of z_tip and finds the 
+       z_piezo location where that derivative is highest. This is the end 
+       point.
+     - The start point is just 0.8% of the length of z_piezo (8 for ramps 
+       with 1024 samples; 4 for ramps with 512 samples)
+     - The end point is reduced until the first zero crossing (before the 
+       maximum) of the derivative of z_tip is found.
     
-    This (start, end) value is used to fit to the linear region of the force ramp. If R^2 is greater than 0.9, then this slope is returned.
-    Otherwise, decrease the end value, fit again, and check R^2. This is repeated until any of these conditions are met:
+    This (start, end) value is used to fit to the linear region of the 
+    force ramp. If R^2 is greater than 0.9, then this slope is returned.
+    Otherwise, decrease the end value, fit again, and check R^2. This is 
+    repeated until any of these conditions are met:
      - R^2 is greater than 0.9, or 
      - There are less than 15 points between the start and end values, or
-     - The process has looped through 10 times without meeting either of the above criteria.
+     - The process has looped through 10 times without meeting either of 
+       the above criteria.
 
     Parameters
     ----------
-    z_piezo: ndarray
+    z_piezo : ndarray
         Z_piezo data as a numpy array.
-    z_tip: ndarray
+    z_tip : ndarray
         Z_tip data as a numpy array.
-    index: int, optional
-        If `index` is supplied, this function will not loop through all force-deflection ramps in the FV data. It will only look at the ramp
-        where the index of z_tip is `index`. Useful for code that selects only one force-ramp to plot.
+    index : int, optional
+        If `index` is supplied, this function will not loop through all 
+        force-deflection ramps in the FV data. It will only look at the 
+        ramp where the index of z_tip is `index`. Useful for code that 
+        selects only one force-ramp to plot.
 
+    Returns
+    -------
+    slopes : ndarray
+        Slopes for each force ramp in scan. Shape is (`size`,), where 
+        `size` is the total number of force ramps in scan.
+    r2s : ndarray
+        R^2 array with same shape as `slopes`.
+    s, e : int
+        Start and end indices actually used to bracket region of interest.
     '''
     size   = z_tip.shape[1]       # 4096 for 64x64 scans; 1024 for 32x32 scans.
     slopes = np.zeros((size,)) 
@@ -161,32 +191,46 @@ def line_slope(z_piezo, z_tip, index = None):
 
 def get_comp_mat(z_piezo, tm_defl, sc_params, linearize = True, savefile = None, smooth_func = smooth_z_tip, **kwargs):
     '''
-    Get the compliance map. In other words, convert each force-deflection ramp to a compliance value.
+    Get the compliance map. In other words, convert each force-deflection 
+    ramp to a compliance value.
 
     Parameters
     ----------
-    z_piezo: ndarray
+    z_piezo : ndarray
         Piezo displacement data as a numpy array.
-    tm_defl: ndarray
+    tm_defl : ndarray
         Tapping mode deflection data as a numpy array.
-    sc_params: dict
-        Dictionary containg parameters loaded from JSON file with `get_scan_params()`.
-    linearize: boolean, optional, default: True
-        If true, will take the cube root of the compliance data. This linearizes the data in displacement, since the 
-        compliance equation depends on the position along the cantilever to the third power (see Euler cantilever equation).
-    savefile: str, optional
+    sc_params : dict
+        Dictionary containg parameters loaded from JSON file with 
+        `get_scan_params()`.
+    linearize:  boolean, optional, default: True
+        If true, will take the cube root of the compliance data. This 
+        linearizes the data in displacement, since the compliance equation 
+        depends on the position along the cantilever to the third power 
+        (see Euler cantilever equation).
+    savefile : str, optional
         If provided, the slopes will be saved to the file `savefile`.
-    smooth_func: function, optional
-        This function will be applied to `tm_defl` to smooth the force-deflection data.
+    smooth_func : function, optional
+        This function will be applied to `tm_defl` to smooth the 
+        force-deflection data.
+
+    Returns
+    -------
+    comp : ndarray
+        Compliance matrix. Shape should be square, with the size of the 
+        sides being the square root of the number of force ramps.
+        E.g. shape is (64, 64).
+    r2s : ndarray
+        R^2 matrix. See `comp` for shape.
     '''
-    # TM Deflection is called z_tip in the paper. Here I am using tm_defl to hold the entire 64x64 array of TM deflections.
+    # TM Deflection is called z_tip in the paper. Here I am using tm_defl 
+    # to hold the entire 64x64 array of TM deflections.
     #tm_defl = data[:, 1, :]
 
     # Smooth the force ramp
     if smooth_func is not None:
         tm_defl = np.apply_along_axis(smooth_func, axis = 0, arr = tm_defl)
 
-    # slope = -(tm_defl[e, :]-tm_defl[s, :]) / (z_piezo[e] - z_piezo[s])             # V / nm
     (slope, r2s, _, _) = line_slope(z_piezo, tm_defl)
     size               = int(math.sqrt(len(slope)))
     slope              = np.nan_to_num(slope)         # Get rid of NaN
@@ -194,7 +238,6 @@ def get_comp_mat(z_piezo, tm_defl, sc_params, linearize = True, savefile = None,
     
     # Save?
     if savefile is not None and isinstance(savefile, str):
-        #np.savetxt(savefile, slope, delimiter=",")
         slope.tofile(savefile, sep=",", format="%2.8f")
         print(f"Saved to {savefile}.")
     
@@ -245,24 +288,32 @@ def get_comp_mat(z_piezo, tm_defl, sc_params, linearize = True, savefile = None,
 
 def comp_mat_inspector(comp_mat, z_piezo, tm_defl, params, fig_width = 10, r2s_mat = None):
     '''
-    Create the interactive compliance map inspector. This tool shows the compliance map on the left, 
-    the selected force-deflection map in the middle, and an R^2 map on the right. Click on any pixel
-    in the compliance map or the R^2 map to update the middle force-deflection map.
+    Create the interactive compliance map inspector. This tool shows the 
+    compliance map on the left, the selected force-deflection map in the 
+    middle, and an R^2 map on the right. Click on any pixel in the 
+    compliance map or the R^2 map to update the middle force-deflection 
+    map.
 
     Parameters
     ----------
-    comp_mat: ndarray
+    comp_mat : ndarray
         Compliance matrix from `get_com_mat()`
-    z_piezo: ndarray
+    z_piezo : ndarray
         Piezo displacement data. Used for central plot.
-    tm_defl: ndarray
+    tm_defl : ndarray
         Tapping mode deflection data. Used for central plot.
-    params: dict
+    params : dict
         Dictionary of parameters. Load from JSON using `get_scan_params()`.
-    fig_width: int, optional
+    fig_width : int, optional
         Width of matplotlib figure in inches.
-    r2s_mat: ndarray, optional
-        R^2 matrix to plot in third column. If not included, third column is disabled.
+    r2s_mat : ndarray, optional
+        R^2 matrix to plot in third column. If not included, third column 
+        is disabled.
+
+    Returns
+    -------
+    axs : Axes
+        Return matplotlibe axes used in figure.
     '''
     # Plot slopes images
     if 'fig' in locals():
@@ -328,22 +379,26 @@ def comp_mat_inspector(comp_mat, z_piezo, tm_defl, params, fig_width = 10, r2s_m
 
 def plot_z_tip(row, col, z_piezo, z_tip, size, ax1, ax2):
     '''
-    Plot the z_tip data. Each pixel in the compliance map comes from fitting to z_tip.
+    Plot the z_tip data. Each pixel in the compliance map comes from 
+    fitting to z_tip.
 
     Parameters
     ----------
-    row: int
-        Row from compliance map. Used along with `col` to identify specific pixel.
-    col: int
-        Column from compliance map. Used along with `row` to identify specific pixel.
-    z_piezo: ndarray
+    row : int
+        Row from compliance map. Used along with `col` to identify specific 
+        pixel.
+    col : int
+        Column from compliance map. Used along with `row` to identify s
+        pecific pixel.
+    z_piezo : ndarray
         Piezo displacement data.
-    z_tip: ndarray
+    z_tip : ndarray
         AFM tip displacement data.
-    size: int
+    size : int
         Number of columns per compliance map.
-    ax1, ax2: Axes
-        Two axes on which to plot. `ax1` is used for the z_tip data and `ax2` is used of its derivative.
+    ax1, ax2 : Axes
+        Two axes on which to plot. `ax1` is used for the z_tip data and 
+        `ax2` is used of its derivative.
     '''
     index  = row*size + col
     ax1.plot(z_piezo, z_tip[:, index]*1000)
@@ -365,10 +420,7 @@ def plot_z_tip(row, col, z_piezo, z_tip, size, ax1, ax2):
     ax2.axvline(x = z_piezo[s], c='c')
     ax2.axvline(x = z_piezo[e], c='m')
 
-    #ax2.relim()
-    #ax2.autoscale_view()
     plt.gcf().canvas.draw()
-    #plt.gcf().canvas.flush_events()
     
     
     
@@ -378,7 +430,7 @@ def onclick_mat(event):
 
     Parameters
     ----------
-    event: matplotlib.backend_bases.Event
+    event : matplotlib.backend_bases.Event
         Event fired when mouse clicked on compliance map.
     '''
     try:

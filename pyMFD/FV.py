@@ -4,7 +4,8 @@ from pyMFD.summarize   import get_comp_mat
 
 class FV:
     '''
-    This class represents a single force-volume scan. It contains the relevant scan parameters and force-volume data.
+    This class represents a single force-volume scan. It contains the 
+    relevant scan parameters and force-volume data.
     '''
 
     def __init__(
@@ -25,20 +26,25 @@ class FV:
         ----------
         fv_filename : str
         fv_params_func : function, optional
-            Function that takes a string to the FV file and returns the required parameters in a dictionary.
-            See pyMFD.nanoscope for information on the required parameters.
+            Function that takes a string to the FV file and returns the 
+            required parameters in a dictionary. See `pyMFD.nanoscope` for 
+            nformation on the required parameters.
         fv_data_func : function, optional
-            Function that takes a string to the FV file and parameters dictionary. Must return a tuple where
-            the first element is a 1-D np.ndarray containing the z_piezo ramp deflection series. The second 
-            argument is a np.ndarray with shape (X, Y, Z) containing the force-volume tip deflection data. 
-            X should be the size of the 1-D z_piezo ramp, Y should be 1 or 2 (depending on if only trace, or 
-            trace and retrace are included), and Z should be the squared value of the size of the FV scan.
-            E.g. Z=4096 for a 64x64 "pixel" scan.
+            Function that takes a string to the FV file and parameters 
+            dictionary. Must return a tuple where the first element is a 
+            1-D np.ndarray containing the z_piezo ramp deflection series. 
+            The second argument is a np.ndarray with shape (X, Y, Z) 
+            containing the force-volume tip deflection data. X should be 
+            the size of the 1-D z_piezo ramp, Y should be 1 or 2 
+            (depending on if only trace, or trace and retrace are 
+            included), and Z should be the squared value of the size of the 
+            FV scan. E.g. Z=4096 for a 64x64 "pixel" scan.
         sc_params_filename : str, optional
             String containing the path to the scan parameters filename.
         sc_params_func : function, optional
-            Function that takes sc_params_filename and returns a dictionary containing the required scan
-            parameters. See pyMFD.scan_params for information on the required parameters.
+            Function that takes sc_params_filename and returns a dictionary 
+            containing the required scan parameters. See pyMFD.scan_params 
+            for information on the required parameters.
         '''
         self.fv_filename             = fv_filename
         self.sc_params_filename      = self.fv_filename + ".json" if sc_params_filename is None else sc_params_filename
@@ -52,13 +58,20 @@ class FV:
 
     def get_pixel_size(self, scan_size=None, scan_points=None):
         '''
-        Calculate the size of a single pixel in the force-volume data. Should be in units of meters.
+        Calculate the size of a single pixel in the force-volume data. 
+        Should be in units of meters.
+
         Parameters
         ----------
-        scan_size: float, optional
+        scan_size : float, optional
             The total size of the force-volume scan (in meters).
-        scan_points: int, optional
+        scan_points : int, optional
             The number of force-deflection ramps in each line of the scan.
+
+        Returns
+        -------
+        float
+            Size of pixel (in meters).
         '''
         if scan_size is None:
             scan_size   = self.fv_params["scan_size"]
@@ -70,13 +83,27 @@ class FV:
 
     def get_extend(self):
         '''
-        Return the force-volume data recorded during the extension of the AFM cantilever.
+        Return the force-volume data recorded during the extension of the 
+        AFM cantilever.
+
+        Returns
+        -------
+        ndarray
+            The extension curves of the tapping mode deflection data.
+            Shape is (ramp_length, 1, num_curves), e.g. (1024, 1, 4096)
         '''
         return self.tm_defl[:, 0, :]
 
     def get_retract(self):
         '''
-        Return the force-volume data recorded during the retraction of the AFM cantilever.
+        Return the force-volume data recorded during the retraction of the 
+        AFM cantilever.
+
+        Returns
+        -------
+        ndarray
+            The retraction curves of the tapping mode deflection data.
+            Shape is (ramp_length, 1, num_curves), e.g. (1024, 1, 4096)
         '''
         return self.tm_defl[:, 1, :]
 
@@ -92,6 +119,20 @@ class FV:
             Function that will perform the summary. By default, this is a function that takes `z_piezo`, 
             `tm_defl`, and `sc_params` and returns the compliance matrix and R^2 matrix (how well each curve 
             was summarized). 
+
+        Returns
+        -------
+        Default return values if `summary_func`=`get_comp_mat`.
+        ndarray
+            Compliance matrix. Shape should be square, with the size of the 
+            sides being the square root of the number of force ramps.
+            E.g. shape is (64, 64).
+        ndarray
+            R^2 matrix. See `comp` for shape.
+
+        See Also
+        --------
+        See `get_comp_mat()`.
         '''
         if which_dir == 'trace' or which_dir == 'extend' or which_dir == 0:
             which_dir = 0
