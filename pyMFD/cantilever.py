@@ -90,11 +90,13 @@ def fit_compliance_linear(position, compliance):
     '''
     Fit the linearized position vs compliance graph.
     
-    1/k       = (4/(E*w*t^3))*(L-c)^3
-    1/k^(1/3) = (4/(E*w*t^3))^(1/3)*(L-c)
-    1/k^(1/3) = a*(L-c)
-    1/k^(1/3) = a*L-a*c
-    y   = m*x+b
+    ::
+
+        1/k       = (4/(E*w*t^3))*(L-c)^3
+        1/k^(1/3) = (4/(E*w*t^3))^(1/3)*(L-c)
+        1/k^(1/3) = a*(L-c)
+        1/k^(1/3) = a*L-a*c
+        y         = m*x+b
     
     The slope is proportional to E. To get the fixed end offset, divide the 
     intercept by the slope (and take negative).
@@ -119,6 +121,9 @@ def fit_compliance_linear(position, compliance):
 def fit_fun(L, a, c):
     '''
     Function to fit with scipy.optimize.curve_fit. 
+    
+    ::
+
         compliance = 1/k = 1/a*(L - c)**3
 
     Parameters
