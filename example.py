@@ -8,7 +8,7 @@ force-volume atomic force microscope scans. This software can be used
 to create a compliance map of a microcantilever and then analyze the 
 compliance along the cantilever to extract Young's modulus.
 
-See installation instructions for requirements.
+See :doc:`usage` for requirements.
 
 Example
 -------
