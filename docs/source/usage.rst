@@ -10,9 +10,12 @@ pyMFD was tested with Python 3.7.11 and has the following requirements::
     matplotlib >= 3.5.0
     bottleneck >= 1.3.2
 
-The following are required to build the documentation::
+The following is required to run the tests::
 
     pytest   >= 7.1.2
+
+The following are required to build the documentation::
+
     sphinx   >= 4.4.0
     numpydoc >= 1.4.0
 
