@@ -1,5 +1,5 @@
 ---
-title: 'pyMFD: A Python package for multipoint force-deflection analysis'
+title: 'pyMFD: A package for multipoint force-deflection analysis'
 tags:
   - Python
   - physics
@@ -8,11 +8,9 @@ tags:
 authors:
   - name: Kyle G. Larsen
     orcid: 0000-0001-9968-2133
-    equal-contrib: true
     affiliation: 1 
   - name: Robert C. Davis
     orcid: 0000-0002-6165-4396
-    equal-contrib: false
     affiliation: 1
 affiliations:
  - name: Department of Physics and Astronomy, Brigham Young University, Provo, UT, USA
