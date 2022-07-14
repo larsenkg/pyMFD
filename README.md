@@ -2,8 +2,10 @@
 
 This library allows for loading Nanoscope v7.2 force-volume data and performing 
 multipoint force-deflection (MFD) analysis. MFD is a local materials characterization
-technique that performs many force-deflection ramps on a microcantilever.
-The compliance data is fit to a fixed-free Euler beam and Young's modulus is extracted.
+technique that performs many force-deflection ramps on a microcantilever. 
+The each force-deflection ramp is converted to a compliance value.
+The compliance data is fit to a fixed-free Euler beam and Young's modulus is extracted. pyMFD is the first software created for MFD analysis, as it is 
+a new technique.
 
 ## Installation
 Detailed installation instructions are available in the [documentation](https://larsenkg.github.io/pyMFD/build/html/usage.html#installation).
@@ -66,8 +68,15 @@ print(f"Offset: {offset*1e6:.2f} µm")
 print("---- Linearized fit ----")
 print(f"Young's modulus: {E_lin/1e9:.2f} GPa")
 print(f"Offset: {offset_lin*1e6:.2f} µm")
-
-
+```
+Output:
+```
+---- Cubic fit ----
+Young's modulus: 145.97 GPa
+Offset: 4.14 µm
+---- Linearized fit ----
+Young's modulus: 158.66 GPa
+Offset: 4.04 µm
 ```
 
 ## Community guidelines
