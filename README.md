@@ -5,6 +5,22 @@ multipoint force-deflection (MFD) analysis. MFD is a local materials characteriz
 technique that performs many force-deflection ramps on a microcantilever.
 The compliance data is fit to a fixed-free Euler beam and Young's modulus is extracted.
 
+## Installation
+Detailed installation instructions are available in the [documentation](https://larsenkg.github.io/pyMFD/build/html/usage.html#installation).
+
+```
+      $ git clone https://github.com/larsenkg/pyMFD.git
+      $ cd pyMFD
+      $ python -m venv env
+      $ source env/bin/activate
+(env) $ python -m pip install numpy==1.21.2 scipy==1.7.1 matplotlib==3.5.0 \ 
+        bottleneck==1.3.2 pytest==7.1.2
+(env) $ python -m pytest pyMFD/tests/
+```
+
+## Documentation
+The documentation is available [here](https://larsenkg.github.io/pyMFD/build/html/).
+
 ## Compliance map inspector
 The compliance map inspector allows for interactive exploration of the compliance map (left) and the force ramps (center) that make up each pixel of the compliance map. One can also view a map of $R^2$ values (right) to get an idea of where the fits might fail.
 

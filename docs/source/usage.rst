@@ -28,6 +28,12 @@ like to run the tests, please install this version:
 .. code-block:: console
 
     $ git clone https://github.com/larsenkg/pyMFD.git
+    $ cd pyMFD
+    $ python -m venv env
+    $ source env/bin/activate
+    (env) $ python -m pip install numpy==1.21.2 scipy==1.7.1 matplotlib==3.5.0 \ 
+            bottleneck==1.3.2 pytest==7.1.2
+    (env) $ python -m pytest pyMFD/tests/
 
 pyMFD can also be installed using pip, which will also install the required 
 dependencies:

@@ -212,6 +212,12 @@
 <p>The most up-to-date version of pyMFD is available on Github. If you would
 like to run the tests, please install this version:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git clone https://github.com/larsenkg/pyMFD.git
+<span class="gp">$ </span><span class="nb">cd</span> pyMFD
+<span class="gp">$ </span>python -m venv env
+<span class="gp">$ </span><span class="nb">source</span> env/bin/activate
+<span class="gp gp-VirtualEnv">(env)</span> <span class="gp">$ </span>python -m pip install <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.21.2 <span class="nv">scipy</span><span class="o">==</span><span class="m">1</span>.7.1 <span class="nv">matplotlib</span><span class="o">==</span><span class="m">3</span>.5.0 <span class="se">\</span>
+        <span class="nv">bottleneck</span><span class="o">==</span><span class="m">1</span>.3.2 <span class="nv">pytest</span><span class="o">==</span><span class="m">7</span>.1.2
+<span class="gp gp-VirtualEnv">(env)</span> <span class="gp">$ </span>python -m pytest pyMFD/tests/
 </pre></div>
 </div>
 <p>pyMFD can also be installed using pip, which will also install the required
