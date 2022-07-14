@@ -52,6 +52,6 @@ print(f"Offset: {offset_lin*1e6:.2f} µm")
 ```
 
 ## Community guidelines
-If you are having issues installing or using this software, or would like to report a bug, please create a [new issue](https://github.com/larsenkg/MFD-analysis/issues/new) in this repository. Please provide as much information as possible, including a reproducible example (if applicable).
+If you are having issues installing or using this software, or would like to report a bug, please create a [new issue](https://github.com/larsenkg/pyMFD/issues/new) in this repository. Please provide as much information as possible, including a reproducible example (if applicable).
 
 Feature requests and pull requests are welcome. If you would like to contribute, but do not know where to start, you may create a new issue. Please let us know your interests and how you would like to help.
