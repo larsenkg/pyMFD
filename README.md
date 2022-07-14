@@ -10,6 +10,13 @@ a new technique.
 ## Installation
 Detailed installation instructions are available in the [documentation](https://larsenkg.github.io/pyMFD/build/html/usage.html#installation).
 
+You can install pyMFD with pip:
+```
+$ pip install pyMFD
+```
+
+In order to run the tests, please install from source. The following installs 
+the dependencies in a python virtual environment:
 ```
       $ git clone https://github.com/larsenkg/pyMFD.git
       $ cd pyMFD
