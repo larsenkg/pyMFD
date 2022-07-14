@@ -26,11 +26,11 @@ the dependencies in a python virtual environment:
         bottleneck==1.3.2 pytest==7.1.2
 (env) $ python -m pytest pyMFD/tests/
 ```
-
 ## Documentation
 The documentation is available [here](https://larsenkg.github.io/pyMFD/build/html/).
 
-## Compliance map inspector
+## Example
+### Compliance map inspector
 The compliance map inspector allows for interactive exploration of the compliance map (left) and the force ramps (center) that make up each pixel of the compliance map. One can also view a map of $R^2$ values (right) to get an idea of where the fits might fail.
 
 Example:
@@ -59,7 +59,7 @@ plt.show()
 ```
 ![Screenshot of compliance map inspector](https://raw.githubusercontent.com/larsenkg/pyMFD/9fa9ba57a4011f9dfd3a494575bea6b1631e4859/docs/source/_static/comp_mat_inspector.png)
 
-## Calculate Young's modulus of microcantilever
+### Calculate Young's modulus of microcantilever
 
 ```python
 # Continued from above
