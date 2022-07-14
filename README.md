@@ -1,6 +1,9 @@
 # Multipoint force-deflection analysis
 
-This library allows for loading Nanoscope v7.2 force-volume data and performing multipoint force-deflection (MFD) analysis. 
+This library allows for loading Nanoscope v7.2 force-volume data and performing 
+multipoint force-deflection (MFD) analysis. MFD is a local materials characterization
+technique that performs many force-deflection ramps on a microcantilever.
+The compliance data is fit to a fixed-free Euler beam and Young's modulus is extracted.
 
 ## Compliance map inspector
 The compliance map inspector allows for interactive exploration of the compliance map (left) and the force ramps (center) that make up each pixel of the compliance map. One can also view a map of $R^2$ values (right) to get an idea of where the fits might fail.

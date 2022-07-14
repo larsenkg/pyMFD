@@ -9,9 +9,6 @@ Subpackages
 
    pyMFD.tests
 
-Submodules
-----------
-
 pyMFD.FV module
 ---------------
 
