@@ -29,7 +29,7 @@ comp_mat_inspector(
 )
 plt.show()
 ```
-![Screenshot of compliance map inspector](comp_mat_inspector.png)
+![Screenshot of compliance map inspector](docs/source/_static/comp_mat_inspector.png)
 
 ## Calculate Young's modulus of microcantilever
 
